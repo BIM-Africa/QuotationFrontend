@@ -90,46 +90,57 @@ function App() {
   </svg>
 </button>
       {/* Wave link CSS */}
-      <style>{`
-        .wave-link {
-          cursor: pointer;
-          font-size: 18px;
-          position: relative;
-          white-space: nowrap;
-          background: transparent;
-          border: 0;
-          overflow: hidden;
-          padding: 4px 0;
-        }
-        .wave-link:before {
-          content: '';
-          background: #FFF;
-          position: absolute;
-          width: 100%;
-          height: 1px;
-          top: 100%;
-          left: 0;
-          pointer-events: none;
-        }
-        .link__graphic {
-          position: absolute;
-          top: 0;
-          left: 0;
-          pointer-events: none;
-          fill: none;
-          stroke: #FFF;
-          stroke-width: 1px;
-        }
-        .link__graphic--slide {
-          top: -3px;
-          stroke-width: 2px;
-          transition: transform 0.7s;
-          transition-timing-function: cubic-bezier(0, 0.25, 0.5, 1);
-        }
-        .wave-link:hover .link__graphic--slide {
-          transform: translate3d(-66.6%, 0, 0);
-        }
-      `}</style>
+    <style>{`
+  .wave-link {
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+    white-space: nowrap;
+    background: transparent;
+    border: 0;
+    overflow: hidden;
+    padding: 4px 0;
+  }
+
+  .wave-link:before {
+    content: '';
+    background: #FFF;
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    top: 100%;
+    left: 0;
+    pointer-events: none;
+  }
+
+  .link__graphic {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    fill: none;
+    stroke: #FFF;
+    stroke-width: 1px;
+  }
+
+  /* ⭐ Ultra-smooth + fast hover response wave animation */
+  .link__graphic--slide {
+    top: -3px;
+    stroke-width: 2px;
+
+    /* smoother, more fluid, instant start */
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* GPU acceleration */
+    will-change: transform;
+  }
+
+  .wave-link:hover .link__graphic--slide {
+    transform: translate3d(-66.6%, 0, 0);
+  }
+`}</style>
+
+
 
       <div className="bg-black/95 backdrop-blur-sm sticky top-0 z-50">
   <div className="bg-black w-full py-2">
