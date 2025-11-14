@@ -1019,7 +1019,7 @@ const QuotationTool: React.FC = () => {
     };
 
     try {
-      const res = await fetch(`https://backend-instant-quote-ten.vercel.app/save-basic`, {
+      const res = await fetch(`https://backend-instant-quote.vercel.app/save-basic`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -1109,7 +1109,7 @@ const QuotationTool: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`https://backend-instant-quote-ten.vercel.app/save`, {
+      const response = await fetch(`https://backend-instant-quote.vercel.app/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
