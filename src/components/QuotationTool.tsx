@@ -706,7 +706,7 @@ const QuotationTool: React.FC = () => {
   };
   const insertProductsPriceMap: Record<FormData["insertProducts"], number> = {
     "insert-all": 3000,
-    "provide-training": 1000,
+    "provide-training": 4000,
     "": 0,
   };
   const pagesPriceMap: Record<FormData["pages"], number> = {
@@ -1655,11 +1655,11 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
 
                   {formData.products && (
                     <div>
-                      <label className="block text-sm font-medium text-white mb-4">Insert products or training?</label>
+                      <label className="block text-sm font-medium text-white mb-4">Product Upload & Management</label>
                       <div className="space-y-3">
                         {[
-                          { value: "insert-all", label: `Insert all → + MUR ${getInsertAllPrice().toLocaleString()}` },
-                          { value: "provide-training", label: "Provide training → + MUR 1,000" },
+                          { value: "insert-all", label: `We Handle Product Uploads → + MUR ${getInsertAllPrice().toLocaleString()}` },
+                          { value: "provide-training", label: "You Manage Uploads (With Training) → + MUR 4,000" },
                         ].map((o) => (
                           <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
                             <input type="radio" name="insertProducts" value={o.value} checked={formData.insertProducts === (o.value as any)} onChange={(e) => handleInput("insertProducts", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
@@ -1697,10 +1697,10 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                 <label className="block text-sm font-medium text-white-700 mb-4">Design Style *</label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {[
-                    { value: "template", label: "Template" },
-                    { value: "semi-custom", label: "Semi-custom" },
-                    { value: "fully-custom", label: "Fully custom" },
-                    { value: "not-sure", label: "Not sure" },
+                    { value: "template", label: "Optimized UI Design" },
+                    { value: "semi-custom", label: "Enhanced UI/UX Experience" },
+                    { value: "fully-custom", label: "Fully Engineered Custom UI/UX" },
+                    { value: "not-sure", label: "Unsure — Guide Me" },
                   ].map((o) => (
                     <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
                       <input type="radio" name="designStyle" value={o.value} checked={formData.designStyle === (o.value as any)} onChange={(e) => handleInput("designStyle", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
