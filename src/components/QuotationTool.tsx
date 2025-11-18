@@ -717,10 +717,10 @@ const QuotationTool: React.FC = () => {
     "": 0,
   };
   const designPriceMap: Record<FormData["designStyle"], number> = {
-    template: 2000,
-    "semi-custom": 4000,
-    "fully-custom": 7000,
-    "not-sure": 3000,
+    template: 5000,
+    "semi-custom": 10000,
+    "fully-custom": 20000,
+    "not-sure": 5000,
     "": 0,
   };
   const featurePrices: Record<FeatureKey, number> = {
