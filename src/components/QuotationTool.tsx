@@ -198,54 +198,64 @@ interface ConvertedPrice {
 
 // Micro-event triggers start here - step 1
 
-// Micro-event triggers start here - step 1
+// 1. DYNAMIC TRACKING FUNCTIONS (Only one definition needed, place at the top)
 
-// Function to push field interaction event to the Data Layer
-const trackFieldInteraction = (fieldName) => {
-  if (typeof window.dataLayer !== 'undefined') {
-    window.dataLayer.push({
-      event: 'field_interaction', // This is the GTM Trigger Name
-      form_name: 'website_quotation',
-      form_step: 'step_1',
-      field_name: fieldName
-    });
-    console.log(`GTM Event: field_interaction for ${fieldName} pushed.`);
-  }
+const trackFieldInteraction = (fieldName, stepName) => { 
+  if (typeof window.dataLayer !== 'undefined') {
+    window.dataLayer.push({
+      event: 'field_interaction',
+      form_name: 'website_quotation',
+      form_step: stepName, // Dynamic
+      field_name: fieldName
+    });
+    console.log(`GTM Event: field_interaction for ${fieldName} on ${stepName} pushed.`);
+  }
 };
 
-// Function to push step completion event to the Data Layer
-const trackStepCompletion = () => {
-  if (typeof window.dataLayer !== 'undefined') {
-    window.dataLayer.push({
-      event: 'form_step_complete', // This is the GTM Trigger Name
-      form_name: 'website_quotation',
-      form_step: 'step_1'
-    });
-    console.log(`GTM Event: form_step_complete for Step 1 pushed.`);
-  }
+const trackStepCompletion = (stepName, featureData) => { 
+  const dataLayerObject = {
+    event: 'form_step_complete',
+    form_name: 'website_quotation',
+    form_step: stepName, // Dynamic
+  };
+
+  if (featureData) {
+      dataLayerObject.selected_features = featureData;
+  }
+  
+  if (typeof window.dataLayer !== 'undefined') {
+    window.dataLayer.push(dataLayerObject);
+    console.log(`GTM Event: form_step_complete for ${stepName} pushed.`);
+  }
 };
 
-// Micro-event triggers ends here - step 1
 
-// --- Your existing handleNextFromStep1 function (THE CODE TO UPDATE) ---
+// 2. STEP HANDLERS (These are now correct)
+
 const handleNextFromStep1 = async () => {
-  // Assuming 'validateStep1' checks that all required fields are filled and correct.
-  const isValid = validateStep1(formData); 
-    
-  if (isValid) {
-    // 1. 🔥 ADD THE TRACKING CALL HERE
-    trackStepCompletion(); 
-        
-    // 2. Original success actions follow (e.g., save data, move step)
-    nextStep(); // Or whatever advances the form
-  } else {
-    // Validation failed, errors displayed (NO TRACKING)
-  }
+  const isValid = validateStep1(formData); 
+    
+  if (isValid) {
+    // Calls the dynamic function: trackStepCompletion('step_1')
+    trackStepCompletion('step_1'); 
+    nextStep(); 
+  }
 };
 
-// Micro-event triggers ends here - step 1
+const handleNextFromStep2 = async () => {
+    const isValid = validateStep2(formData); 
+    
+    if (isValid) {
+        const featuresString = formData.features.join('|'); 
 
+        // Calls the dynamic function: trackStepCompletion('step_2', features)
+        trackStepCompletion('step_2', featuresString); 
+        
+        nextStep(); 
+    }
+};
 
+// Micro-event triggers ends here - step 2
 
 // GA helpers
 const initGoogleAnalytics = (): void => {
