@@ -198,6 +198,8 @@ interface ConvertedPrice {
 
 // Micro-event triggers start here - step 1
 
+// Micro-event triggers start here - step 1
+
 // Function to push field interaction event to the Data Layer
 const trackFieldInteraction = (fieldName) => {
   if (typeof window.dataLayer !== 'undefined') {
@@ -207,7 +209,7 @@ const trackFieldInteraction = (fieldName) => {
       form_step: 'step_1',
       field_name: fieldName
     });
-    console.log(`GTM Event: field_interaction for ${fieldName} pushed.`); // Optional: for debugging
+    console.log(`GTM Event: field_interaction for ${fieldName} pushed.`);
   }
 };
 
@@ -219,7 +221,25 @@ const trackStepCompletion = () => {
       form_name: 'website_quotation',
       form_step: 'step_1'
     });
-    console.log(`GTM Event: form_step_complete for Step 1 pushed.`); // Optional: for debugging
+    console.log(`GTM Event: form_step_complete for Step 1 pushed.`);
+  }
+};
+
+// Micro-event triggers ends here - step 1
+
+// --- Your existing handleNextFromStep1 function (THE CODE TO UPDATE) ---
+const handleNextFromStep1 = async () => {
+  // Assuming 'validateStep1' checks that all required fields are filled and correct.
+  const isValid = validateStep1(formData); 
+    
+  if (isValid) {
+    // 1. 🔥 ADD THE TRACKING CALL HERE
+    trackStepCompletion(); 
+        
+    // 2. Original success actions follow (e.g., save data, move step)
+    nextStep(); // Or whatever advances the form
+  } else {
+    // Validation failed, errors displayed (NO TRACKING)
   }
 };
 
@@ -1088,6 +1108,7 @@ const QuotationTool: React.FC = () => {
 
     if (id) {
       setSavedId(id);
+      trackStepCompletion();
       trackEvent("basic_info_saved", "QuotationTool", `SavedId:${id}`);
     } else {
       trackEvent("basic_info_save_failed", "QuotationTool", "Save failed or no id returned");
