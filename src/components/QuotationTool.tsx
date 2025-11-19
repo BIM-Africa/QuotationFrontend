@@ -1680,7 +1680,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
       { value: "ecommerce", label: "E-Commerce Website" },
     ].map((o) => (
       <label key={o.value} className="flex items-center p-4 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-        <input type="radio" name="websiteType" value={o.value} checked={formData.websiteType === (o.value as any)} onChange={(e) => handleInput("websiteType", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+        <input type="radio" name="websiteType" value={o.value} checked={formData.websiteType === (o.value as any)} onChange={(e) => { handleInput("websiteType", e.target.value as any); trackFieldInteraction('website_type', 'step_2'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
         <span className="ml-3 text-sm font-medium text-gray-700">{o.label}</span>
       </label>
     ))}
@@ -1701,7 +1701,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                         { value: "200-500", label: "200-500" },
                       ].map((o) => (
                         <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                          <input type="radio" name="products" value={o.value} checked={formData.products === (o.value as any)} onChange={(e) => handleInput("products", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                          <input type="radio" name="products" value={o.value} checked={formData.products === (o.value as any)} onChange={(e) => { handleInput("products", e.target.value as any); trackFieldInteraction('product_count', 'step_2'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                           <span className="ml-3 text-sm text-gray-700">{o.label}</span>
                         </label>
                       ))}
@@ -1718,7 +1718,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                           { value: "provide-training", label: "You Manage Uploads (With Training) → + MUR 4,000" },
                         ].map((o) => (
                           <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                            <input type="radio" name="insertProducts" value={o.value} checked={formData.insertProducts === (o.value as any)} onChange={(e) => handleInput("insertProducts", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                            <input type="radio" name="insertProducts" value={o.value} checked={formData.insertProducts === (o.value as any)} onChange={(e) => { handleInput("insertProducts", e.target.value as any); trackFieldInteraction('product_upload_type', 'step_2'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                             <span className="ml-3 text-sm text-gray-700">{o.label}</span>
                           </label>
                         ))}
@@ -1740,7 +1740,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                       { value: "15+", label: "15+" },
                     ].map((o) => (
                       <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                        <input type="radio" name="pages" value={o.value} checked={formData.pages === (o.value as any)} onChange={(e) => handleInput("pages", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                        <input type="radio" name="pages" value={o.value} checked={formData.pages === (o.value as any)} onChange={(e) => { handleInput("pages", e.target.value as any); trackFieldInteraction('page_count', 'step_2'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                         <span className="ml-3 text-sm text-gray-700">{o.label}</span>
                       </label>
                     ))}
@@ -1759,7 +1759,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                     { value: "Unsure — Guide Me", label: "Unsure — Guide Me" },
                   ].map((o) => (
                     <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                      <input type="radio" name="designStyle" value={o.value} checked={formData.designStyle === (o.value as any)} onChange={(e) => handleInput("designStyle", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                      <input type="radio" name="designStyle" value={o.value} checked={formData.designStyle === (o.value as any)} onChange={(e) => { handleInput("designStyle", e.target.value as any); trackFieldInteraction('design_style', 'step_2'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                       <span className="ml-3 text-sm text-white">{o.label}</span>
                     </label>
                   ))}
@@ -1782,7 +1782,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                     { value: "newsletter", label: "Newsletter" },
                   ] as { value: FeatureKey; label: string }[]).map((o) => (
                     <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                      <input type="checkbox" checked={formData.features.includes(o.value)} onChange={() => toggleFeature(o.value)} className="w-4 h-4 accent-red-700 border-gray-300 focus:ring-red-700" />
+                      <input type="checkbox" checked={formData.features.includes(o.value)} onChange={() => { toggleFeature(o.value); trackFieldInteraction('feature_checkbox', 'step_2'); }} className="w-4 h-4 accent-red-700 border-gray-300 focus:ring-red-700" />
                       <span className="ml-3 text-sm text-white">{o.label}</span>
                     </label>
                   ))}
