@@ -196,6 +196,37 @@ interface ConvertedPrice {
   currency: string;
 }
 
+// Micro-event triggers start here - step 1
+
+// Function to push field interaction event to the Data Layer
+const trackFieldInteraction = (fieldName) => {
+  if (typeof window.dataLayer !== 'undefined') {
+    window.dataLayer.push({
+      event: 'field_interaction', // This is the GTM Trigger Name
+      form_name: 'website_quotation',
+      form_step: 'step_1',
+      field_name: fieldName
+    });
+    console.log(`GTM Event: field_interaction for ${fieldName} pushed.`); // Optional: for debugging
+  }
+};
+
+// Function to push step completion event to the Data Layer
+const trackStepCompletion = () => {
+  if (typeof window.dataLayer !== 'undefined') {
+    window.dataLayer.push({
+      event: 'form_step_complete', // This is the GTM Trigger Name
+      form_name: 'website_quotation',
+      form_step: 'step_1'
+    });
+    console.log(`GTM Event: form_step_complete for Step 1 pushed.`); // Optional: for debugging
+  }
+};
+
+// Micro-event triggers ends here - step 1
+
+
+
 // GA helpers
 const initGoogleAnalytics = (): void => {
   try {
@@ -1388,7 +1419,7 @@ const QuotationTool: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">Full Name</label>
-                  <input type="text" value={formData.fullName} onChange={(e) => handleInput("fullName", e.target.value)} placeholder="Enter your full name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
+                  <input type="text" value={formData.fullName} onChange={(e) => handleInput("fullName", e.target.value)} onBlur={() => trackFieldInteraction('full_name')} placeholder="Enter your full name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
                border border-[#1f2937]
                outline-none focus:outline-none
                ring-0 focus:ring-0 focus:ring-offset-0
@@ -1399,7 +1430,7 @@ const QuotationTool: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">Company Name</label>
-                  <input type="text" value={formData.companyName} onChange={(e) => handleInput("companyName", e.target.value)} placeholder="Enter your company name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
+                  <input type="text" value={formData.companyName} onChange={(e) => handleInput("companyName", e.target.value)} onBlur={() => trackFieldInteraction('company_name')} placeholder="Enter your company name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
                border border-[#1f2937]
                outline-none focus:outline-none
                ring-0 focus:ring-0 focus:ring-offset-0
@@ -1410,7 +1441,7 @@ const QuotationTool: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-2">Country</label>
-                <select value={formData.country} onChange={(e) => handleInput("country", e.target.value as CountryKey)} className="w-full px-4 py-3  rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb]" disabled={isLoadingStep1}>
+                <select value={formData.country} onChange={(e) => { handleInput("country", e.target.value as CountryKey); trackFieldInteraction('country_select');}} className="w-full px-4 py-3  rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb]" disabled={isLoadingStep1}>
                   <option value="">Select your country</option>
                   {COUNTRY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -1567,6 +1598,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                   <PhoneInputComponent
                     value={formData.whatsappNumber}
                     onChange={handleWhatsAppInput}
+                    onBlur={() => trackFieldInteraction('whatsapp_number')}
                     selectedCountry={selectedPhoneCountry}
                     disabled={isLoadingStep1}
                     placeholder="Enter phone number"
@@ -1578,7 +1610,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input type="email" value={formData.email} onChange={(e) => handleInput("email", e.target.value)} placeholder="Enter your email" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
+                  <input type="email" value={formData.email} onChange={(e) => handleInput("email", e.target.value)} onBlur={() => trackFieldInteraction('email')} placeholder="Enter your email" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
                border border-[#1f2937]
                outline-none focus:outline-none
                ring-0 focus:ring-0 focus:ring-offset-0
