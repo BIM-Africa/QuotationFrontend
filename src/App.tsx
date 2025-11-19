@@ -431,8 +431,10 @@ function App() {
 >
   Contact us
 </a>
-                <a href="#" className="block text-white text-sm">Privacy Policy</a>
-                <a href="#" className="block text-white text-sm">Terms of Service</a>
+                <a href="https://www.bim.africa/PrivacyPolicy" target="_blank"
+  rel="noopener noreferrer" className="block text-white text-sm">Privacy Policy</a>
+                <a href="https://www.bim.africa/TermsofService" target="_blank"
+  rel="noopener noreferrer" className="block text-white text-sm">Terms of Service</a>
               </div>
             </div>
           </div>
@@ -490,9 +492,9 @@ function App() {
 
           {/* Bottom Links */}
           <div className="text-center text-white text-xs border-t border-gray-800 pt-6">
-            <a href="#" className="hover:text-[#ff1f00]">Privacy Policy</a>
+            <a href="https://www.bim.africa/PrivacyPolicy"  target="_blank" rel="noopener noreferrer" className="hover:text-[#ff1f00]">Privacy Policy</a>
             <span className="mx-2">|</span>
-            <a href="#" className="hover:text-[#ff1f00]">Terms of Service</a>
+            <a href="https://www.bim.africa/TermsofService" target="_blank" rel="noopener noreferrer" className="hover:text-[#ff1f00]">Terms of Service</a>
           </div>
         </div>
 
@@ -562,8 +564,10 @@ function App() {
   Contact Us
 </a>
 
-              <a href="#" className="block text-white hover:text-white text-xs sm:text-sm lg:text-base">Privacy Policy</a>
-              <a href="#" className="block text-white hover:text-white text-xs sm:text-sm lg:text-base">Terms of Service</a>
+              <a href="https://www.bim.africa/PrivacyPolicy"  target="_blank"
+  rel="noopener noreferrer" className="block text-white hover:text-white text-xs sm:text-sm lg:text-base">Privacy Policy</a>
+              <a href="https://www.bim.africa/TermsofService" target="_blank"
+  rel="noopener noreferrer" className="block text-white hover:text-white text-xs sm:text-sm lg:text-base">Terms of Service</a>
             </div>
           </div>
 
