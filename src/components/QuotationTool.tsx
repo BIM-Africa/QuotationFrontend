@@ -1618,8 +1618,10 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                   <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
                   <PhoneInputComponent
                     value={formData.whatsappNumber}
-                    onChange={handleWhatsAppInput}
-                    onBlur={() => trackFieldInteraction('whatsapp_number')}
+                     onChange={(value) => { 
+                         handleWhatsAppInput(value); // Assuming this is how your handler works
+                         trackFieldInteraction('whatsapp_number');
+                       }}
                     selectedCountry={selectedPhoneCountry}
                     disabled={isLoadingStep1}
                     placeholder="Enter phone number"
