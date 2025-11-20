@@ -255,7 +255,23 @@ const handleNextFromStep2 = async () => {
     }
 };
 
-// Micro-event triggers ends here - step 2
+// Ensure this function exists in your JS file:
+const handleNextFromStep3 = async () => {
+    // Replace with your actual validation function for Step 3
+    const isValid = validateStep3(formData); 
+    
+    if (isValid) {
+        // 1. Step Completion Tracking
+        trackStepCompletion('step_3'); 
+        
+        // 2. Final Submission (Triggers API call and conversion tracking)
+        handleSubmit(); 
+    } else {
+        // Validation failed, errors displayed (NO TRACKING)
+    }
+};
+
+// Micro-event triggers ends here - step 3
 
 // GA helpers
 const initGoogleAnalytics = (): void => {
@@ -1132,6 +1148,10 @@ const QuotationTool: React.FC = () => {
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2) || !validateStep(3)) return;
 
+   // 🔥 STEP 3 COMPLETION TRACKING INSERTION 🔥
+    // This tracks that the user successfully completed the final step fields
+    trackStepCompletion('step_3');
+       
     setIsSubmitting(true);
     trackEvent("quote_submit_started", "QuotationTool", "Quote Submission Started");
 
@@ -1830,7 +1850,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                     { value: "<2-weeks", label: "<2 weeks (Fastest Delivery)" },
                   ].map((o) => (
                     <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                      <input type="radio" name="timeline" value={o.value} checked={formData.timeline === (o.value as any)} onChange={(e) => handleInput("timeline", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                      <input type="radio" name="timeline" value={o.value} checked={formData.timeline === (o.value as any)} onChange={(e) => { handleInput("timeline", e.target.value as any); trackFieldInteraction('timeline', 'step_3'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                       <span className="ml-3 text-sm text-gray-700">{o.label}</span>
                     </label>
                   ))}
@@ -1846,7 +1866,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                     { value: "Hosting Managed by Client", label: "Hosting Managed by Client" },
                   ].map((o) => (
                     <label key={o.value} className="flex items-center p-3  focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                      <input type="radio" name="hosting" value={o.value} checked={formData.hosting === (o.value as any)} onChange={(e) => handleInput("hosting", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                      <input type="radio" name="hosting" value={o.value} checked={formData.hosting === (o.value as any)} onChange={(e) => { handleInput("hosting", e.target.value as any); trackFieldInteraction('hosting', 'step_3'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                       <span className="ml-3 text-sm text-white">{o.label}</span>
                     </label>
                   ))}
@@ -1862,7 +1882,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                     { value: "client", label: "Domain Managed by Client → No change" },
                   ].map((o) => (
                     <label key={o.value} className="flex items-center p-3 focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg">
-                      <input type="radio" name="domain" value={o.value} checked={formData.domain === (o.value as any)} onChange={(e) => handleInput("domain", e.target.value as any)} className="w-4 h-4 text-blue-600 border-gray-300" />
+                      <input type="radio" name="domain" value={o.value} checked={formData.domain === (o.value as any)} onChange={(e) => { handleInput("domain", e.target.value as any); trackFieldInteraction('domain', 'step_3'); }} className="w-4 h-4 text-blue-600 border-gray-300" />
                       <span className="ml-3 text-sm text-white">{o.label}</span>
                     </label>
                   ))}
@@ -1872,7 +1892,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
 
               <div>
                 <label className="block text-sm font-medium text-white mb-2">Comments</label>
-                <textarea value={formData.comments} onChange={(e) => handleInput("comments", e.target.value)} rows={4} className="w-full px-4 py-3 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg" placeholder="Any additional comments or requirements..." />
+                <textarea value={formData.comments} onChange={(e) => { handleInput("comments", e.target.value); trackFieldInteraction('comments', 'step_3'); }} rows={4} className="w-full px-4 py-3 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb] rounded-lg" placeholder="Any additional comments or requirements..." />
               </div>
             </div>
           )}
