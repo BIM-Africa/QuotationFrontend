@@ -242,18 +242,7 @@ const handleNextFromStep1 = async () => {
   }
 };
 
-const handleNextFromStep2 = async () => {
-    const isValid = validateStep2(formData); 
-    
-    if (isValid) {
-        const featuresString = formData.features.join('|'); 
 
-        // Calls the dynamic function: trackStepCompletion('step_2', features)
-        trackStepCompletion('step_2', featuresString); 
-        
-        nextStep(); 
-    }
-};
 
 // Ensure this function exists in your JS file:
 const handleNextFromStep3 = async () => {
@@ -1066,13 +1055,27 @@ const QuotationTool: React.FC = () => {
   };
 
 
-// 🔥 FIX 1: Simplify nextStep() to only advance the counter.
-// Validation and tracking must happen BEFORE calling this function.
+// 🔥 FIX 2: Inject Step 2 GA4 Tracking directly into nextStep()
 const nextStep = () => {
-    setCurrentStep((s) => Math.min(3, s + 1));
-    // Optional: Keep the original trackEvent if other parts of the form need it, 
-    // but the specialized GA4 tracking happens in the handlers.
-    // trackEvent("step_completed", "QuotationTool", `step_${currentStep}_completed`); 
+    // 1. Validation Check (original)
+    if (validateStep(currentStep)) { 
+        
+        // 🚨 GA4 STEP TRACKING INJECTION
+        if (currentStep === 2) {
+            // Track Step 2 completion, including features data
+            const featuresString = formData.features.join('|');
+            trackStepCompletion('step_2', featuresString);
+        } else if (currentStep === 3) {
+            // Track Step 3 completion (assuming this leads to final submit)
+            trackStepCompletion('step_3');
+        }
+        
+        // 2. Advance the Step (original)
+        setCurrentStep((s) => Math.min(3, s + 1));
+        
+        // 3. (Optional) Keep the old tracking event
+        trackEvent("step_completed", "QuotationTool", `step_${currentStep}_completed`); 
+    }
 };
        
 
@@ -1652,14 +1655,12 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                 <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
 <PhoneInputComponent
   value={formData.whatsappNumber}
-// 🔥 FIX 2A: Explicitly pass (value, country) to the handler
-                    onChange={(value, country) => handleWhatsAppInput(value, country)} 
-                    // 🔥 FIX 2B: Add onBlur for single-fire tracking
-                    onBlur={() => {
-                      if (formData.whatsappNumber && formData.whatsappNumber.length > 5) {
-                        trackFieldInteraction('whatsapp_number', 'step_1');
-                      }
-                    }}
+onChange={(value, country) => handleWhatsAppInput(value, country)} 
+  onBlur={() => { // ADD THIS BLOCK
+    if (formData.whatsappNumber && formData.whatsappNumber.length > 5) {
+      trackFieldInteraction('whatsapp_number', 'step_1');
+    }
+  }}
   selectedCountry={selectedPhoneCountry}
   disabled={isLoadingStep1}
   placeholder="Enter phone number"
@@ -1993,7 +1994,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
             </button>
 
             {currentStep < 3 ? (
-              <button onClick={currentStep === 1 ? handleNextFromStep1 : currentStep === 2 ? handleNextFromStep2: nextStep } disabled={isLoadingStep1} className="flex items-center px-6 py-3 bg-[#ff1f00] text-white rounded-lg hover:bg-[#e1291c] disabled:bg-gray-400">
+              <button onClick={currentStep === 1 ? handleNextFromStep1 : nextStep} disabled={isLoadingStep1} className="flex items-center px-6 py-3 bg-[#ff1f00] text-white rounded-lg hover:bg-[#e1291c] disabled:bg-gray-400">
                 {isLoadingStep1 ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
