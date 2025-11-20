@@ -323,6 +323,7 @@ const PhoneInputComponent: React.FC<PhoneInputProps> = ({
   disabled = false,
   placeholder = "Enter phone number",
   onCountryChange,
+   onBlur,
 }) => {
   const [countries, setCountries] = useState<CountryData[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -620,6 +621,7 @@ const PhoneInputComponent: React.FC<PhoneInputProps> = ({
           onChange={handlePhoneChange}
           onPaste={handlePaste}
           inputMode="tel"
+           onBlur={onBlur}
           onKeyDown={(e) => {
             // allow navigation keys, backspace, delete, arrows, tab
             const allowedKeys = [
