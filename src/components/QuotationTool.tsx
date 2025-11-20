@@ -1065,12 +1065,16 @@ const QuotationTool: React.FC = () => {
     return true;
   };
 
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep((s) => Math.min(3, s + 1));
-      trackEvent("step_completed", "QuotationTool", `step_${currentStep}_completed`);
-    }
-  };
+
+// 🔥 FIX 1: Simplify nextStep() to only advance the counter.
+// Validation and tracking must happen BEFORE calling this function.
+const nextStep = () => {
+    setCurrentStep((s) => Math.min(3, s + 1));
+    // Optional: Keep the original trackEvent if other parts of the form need it, 
+    // but the specialized GA4 tracking happens in the handlers.
+    // trackEvent("step_completed", "QuotationTool", `step_${currentStep}_completed`); 
+};
+       
 
   const prevStep = () => {
     setCurrentStep((s) => Math.max(1, s - 1));
