@@ -1652,13 +1652,14 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                 <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
 <PhoneInputComponent
   value={formData.whatsappNumber}
-  onChange={handleWhatsAppInput}
-   onBlur={() => {
-         // Check that the field has enough digits to be considered a real entry (e.g., more than 5)
-         if (formData.whatsappNumber && formData.whatsappNumber.length > 5) {
-             trackFieldInteraction('whatsapp_number', 'step_1');
-         }
-     }}
+// 🔥 FIX 2A: Explicitly pass (value, country) to the handler
+                    onChange={(value, country) => handleWhatsAppInput(value, country)} 
+                    // 🔥 FIX 2B: Add onBlur for single-fire tracking
+                    onBlur={() => {
+                      if (formData.whatsappNumber && formData.whatsappNumber.length > 5) {
+                        trackFieldInteraction('whatsapp_number', 'step_1');
+                      }
+                    }}
   selectedCountry={selectedPhoneCountry}
   disabled={isLoadingStep1}
   placeholder="Enter phone number"
