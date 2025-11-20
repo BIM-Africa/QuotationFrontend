@@ -944,8 +944,6 @@ const QuotationTool: React.FC = () => {
     setSelectedPhoneCountry(country.code);
     // pass full CountryData into handleCountryChange so we can use detected dial
     handleCountryChange(country);
-   // 🔥 CRITICAL ADDITION: Track interaction for Step 1
-    trackFieldInteraction('whatsapp_number', 'step_1');
   };
 
   // map country label to your COUNTRY_OPTIONS entry (if possible)
@@ -1651,6 +1649,12 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
 <PhoneInputComponent
   value={formData.whatsappNumber}
   onChange={handleWhatsAppInput}
+   onBlur={() => {
+         // Check that the field has enough digits to be considered a real entry (e.g., more than 5)
+         if (formData.whatsappNumber && formData.whatsappNumber.length > 5) {
+             trackFieldInteraction('whatsapp_number', 'step_1');
+         }
+     }}
   selectedCountry={selectedPhoneCountry}
   disabled={isLoadingStep1}
   placeholder="Enter phone number"
