@@ -1647,16 +1647,16 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
 
 
 
-                  <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
-                  <PhoneInputComponent
-                    value={formData.whatsappNumber}
-                     onChange={(value) => handleWhatsAppInput(value); }
-                    selectedCountry={selectedPhoneCountry}
-                    disabled={isLoadingStep1}
-                    placeholder="Enter phone number"
-                    onCountryChange={handleCountryChange}
-                    
-  />
+                <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
+<PhoneInputComponent
+  value={formData.whatsappNumber}
+  onChange={handleWhatsAppInput}
+  selectedCountry={selectedPhoneCountry}
+  disabled={isLoadingStep1}
+  placeholder="Enter phone number"
+  onCountryChange={handleCountryChange}
+/>
+
                   {errors.whatsappNumber && <p className="text-[#ff1f00] text-sm mt-1">{errors.whatsappNumber}</p>}
                 </div>
 
