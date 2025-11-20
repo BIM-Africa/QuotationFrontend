@@ -2012,11 +2012,11 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
         </div>
        <p className="text-center text-sm mt-5 text-[#e5e7eb]">
   By continuing, you agree to our{" "}
-  <a href="/terms" className="text-[#ff1f00] hover:underline">
+  <a href="https://www.bim.africa/TermsofService" target="_blank" rel="noopener noreferrer" className="text-[#ff1f00] hover:underline">
     Terms of Service
   </a>{" "}
   and{" "}
-  <a href="/privacy" className="text-[#ff1f00] hover:underline">
+  <a href="https://www.bim.africa/PrivacyPolicy" target="_blank" rel="noopener noreferrer" className="text-[#ff1f00] hover:underline">
     Privacy Policy
   </a>
 </p>
