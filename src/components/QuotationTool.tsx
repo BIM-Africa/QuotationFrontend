@@ -944,6 +944,8 @@ const QuotationTool: React.FC = () => {
     setSelectedPhoneCountry(country.code);
     // pass full CountryData into handleCountryChange so we can use detected dial
     handleCountryChange(country);
+   // 🔥 CRITICAL ADDITION: Track interaction for Step 1
+    trackFieldInteraction('whatsapp_number', 'step_1');
   };
 
   // map country label to your COUNTRY_OPTIONS entry (if possible)
@@ -1648,10 +1650,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
                   <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
                   <PhoneInputComponent
                     value={formData.whatsappNumber}
-                     onChange={(value) => { 
-                         handleWhatsAppInput(value); // This is missing the second argument: 'country'
-                         trackFieldInteraction('whatsapp_number');
-                     }}
+                     onChange={(value) => handleWhatsAppInput(value); }
                     selectedCountry={selectedPhoneCountry}
                     disabled={isLoadingStep1}
                     placeholder="Enter phone number"
@@ -1985,7 +1984,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
             </button>
 
             {currentStep < 3 ? (
-              <button onClick={currentStep === 1 ? handleNextFromStep1 : nextStep} disabled={isLoadingStep1} className="flex items-center px-6 py-3 bg-[#ff1f00] text-white rounded-lg hover:bg-[#e1291c] disabled:bg-gray-400">
+              <button onClick={currentStep === 1 ? handleNextFromStep1 : currentStep === 2 ? handleNextFromStep2: nextStep } disabled={isLoadingStep1} className="flex items-center px-6 py-3 bg-[#ff1f00] text-white rounded-lg hover:bg-[#e1291c] disabled:bg-gray-400">
                 {isLoadingStep1 ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
