@@ -609,9 +609,9 @@ function App() {
 
         {/* Bottom Links */}
         <div className="hidden sm:block border-t border-gray-800 mt-6 sm:mt-8 lg:mt-12 pt-4 sm:pt-6 lg:pt-8 text-center text-white text-xs sm:text-sm">
-          <a href="#" className="hover:text-white">Privacy Policy</a>{" "}
+          <a href="https://www.bim.africa/PrivacyPolicy" target="_blank" rel="noopener noreferrer" className="hover:text-white">Privacy Policy</a>{" "}
           |{" "}
-          <a href="#" className="hover:text-white">Terms of Service</a>
+          <a href="https://www.bim.africa/TermsofService" target="_blank" rel="noopener noreferrer" className="hover:text-white">Terms of Service</a>
         </div>
       </div>
     </footer>
