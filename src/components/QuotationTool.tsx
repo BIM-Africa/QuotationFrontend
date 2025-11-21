@@ -241,17 +241,11 @@ const handleNextFromStep1 = async () => {
      // 2. 🔥 FIRE META PIXEL LEAD EVENT HERE
     // Check if the fbq function exists (safeguard)
     if (window.fbq) {
-        window.fbq('track', 'Lead', {
-            // Optional parameters for context
-            content_name: 'Quotation Step 1 Complete',
-            status: 'BasicInfoSubmitted' 
-        });
+        window.fbq('track', 'Lead');
     }
     nextStep(); 
   }
 };
-
-
 
 // Ensure this function exists in your JS file:
 const handleNextFromStep3 = async () => {
