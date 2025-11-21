@@ -1134,48 +1134,43 @@ const nextStep = () => {
     }
   };
 
-const handleNextFromStep1 = async () => {
+  const handleNextFromStep1 = async () => {
+
     if (!validateStep(1)) return;
 
     if (isLoadingStep1) return;
 
     setIsLoadingStep1(true);
+
     setCountdown(7);
 
     const apiPromise = saveBasicToServer();
+
     const minLoadingTime = new Promise((r) => setTimeout(r, 7000));
-    
-    // Waits for both server save and 7-second minimum time
-    const [id] = await Promise.all([apiPromise, minLoadingTime]); 
+
+    const [id] = await Promise.all([apiPromise, minLoadingTime]);
 
     if (id) {
-        setSavedId(id);
-        
-        // Internal tracking (keep if needed)
-        trackStepCompletion(); 
-        trackEvent("basic_info_saved", "QuotationTool", `SavedId:${id}`);
-        
-        // 🔥 GTM/META TRACKING: Pushes event directly to Data Layer
-        if (window.dataLayer) {
-            window.dataLayer.push({
-                event: 'form_step_completion',
-                step_name: 'step_1_basic_info', 
-                saved_id: id 
-            });
-        }
-        
+
+      setSavedId(id);
+
+      trackStepCompletion();
+
+      trackEvent("basic_info_saved", "QuotationTool", `SavedId:${id}`);
+
     } else {
-        trackEvent("basic_info_save_failed", "QuotationTool", "Save failed or no id returned");
+
+      trackEvent("basic_info_save_failed", "QuotationTool", "Save failed or no id returned");
+
     }
 
     setIsLoadingStep1(false);
+
     setCountdown(0);
-    
-    // Only advance the step if the save was successful
-    if (id) {
-        setCurrentStep(2);
-    }
-};
+
+    setCurrentStep(2);
+
+  };
 
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2) || !validateStep(3)) return;
