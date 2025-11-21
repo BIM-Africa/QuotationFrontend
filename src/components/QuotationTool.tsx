@@ -236,16 +236,13 @@ const handleNextFromStep1 = async () => {
   const isValid = validateStep1(formData); 
     
   if (isValid) {
-    // 1. FIRE TRACKING EVENT (This is your Meta Lead event)
-    // Calls the dynamic function: trackStepCompletion('step_1')
+    // 1. FIRE TRACKING EVENT (Meta Lead)
     trackStepCompletion('step_1'); 
     
-    // 🔥 2. ADD THE URL CLEANUP (CRITICAL FIX)
-    // This updates the URL in the browser bar without triggering a page reload.
-    // We are changing the path to '/step-2' 
-    window.history.pushState({}, 'Quotation Step 2', '/step-2');
+    // 🔥 INSERT THIS CODE:
+    window.location.hash = '#step-2'; 
     
-    // 3. ADVANCE THE FORM TO THE NEXT STEP
+    // 2. ADVANCE THE FORM TO THE NEXT STEP
     nextStep(); 
   }
 };
