@@ -238,11 +238,6 @@ const handleNextFromStep1 = async () => {
   if (isValid) {
     // Calls the dynamic function: trackStepCompletion('step_1')
     trackStepCompletion('step_1'); 
-     // 2. 🔥 FIRE META PIXEL LEAD EVENT HERE
-    // Check if the fbq function exists (safeguard)
-    if (window.fbq) {
-        window.fbq('track', 'Lead');
-    };
     nextStep(); 
   }
 };
