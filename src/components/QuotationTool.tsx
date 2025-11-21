@@ -242,7 +242,7 @@ const handleNextFromStep1 = async () => {
     // Check if the fbq function exists (safeguard)
     if (window.fbq) {
         window.fbq('track', 'Lead');
-    }
+    };
     nextStep(); 
   }
 };
