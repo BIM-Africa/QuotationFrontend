@@ -705,12 +705,62 @@ const PhoneInputComponent: React.FC<PhoneInputProps> = ({
    ----------------------- */
 
 const QuotationTool: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const [showQuote, setShowQuote] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingStep1, setIsLoadingStep1] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 code
+ const [currentStep, setCurrentStep] = useState<number>(1);
+const [showQuote, setShowQuote] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [isLoadingStep1, setIsLoadingStep1] = useState(false);
+const [countdown, setCountdown] = useState(0);
+const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 code
+
+
+/* --------------------------
+   URL SYNC WITH HISTORY API
+--------------------------- */
+
+// Read URL on first load and set the correct step
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const match = window.location.pathname.match(/step-(\d+)/);
+    if (match) {
+      const stepFromUrl = Number(match[1]);
+      if ([1, 2, 3].includes(stepFromUrl)) {
+        setCurrentStep(stepFromUrl);
+      }
+    }
+  }
+
+  // Handle browser Back/Forward buttons
+  const onPop = () => {
+    const match = window.location.pathname.match(/step-(\d+)/);
+    if (match) {
+      const stepFromUrl = Number(match[1]);
+      if ([1, 2, 3].includes(stepFromUrl)) {
+        setCurrentStep(stepFromUrl);
+      }
+    } else {
+      setCurrentStep(1);
+    }
+  };
+
+  window.addEventListener("popstate", onPop);
+  return () => window.removeEventListener("popstate", onPop);
+}, []);
+
+// Update URL whenever currentStep changes
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const base = window.location.pathname
+    .replace(/\/step-\d+$/, "")
+    .replace(/\/$/, "");
+
+  const newPath =
+    currentStep === 1
+      ? (base || "/")
+      : `${base}/step-${currentStep}`;
+
+  window.history.pushState(null, "", newPath);
+}, [currentStep]);
 
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -1064,32 +1114,29 @@ const QuotationTool: React.FC = () => {
 
 // 🔥 FIX 2: Inject Step 2 GA4 Tracking directly into nextStep()
 const nextStep = () => {
-    // 1. Validation Check (original)
-    if (validateStep(currentStep)) { 
-        
-        // 🚨 GA4 STEP TRACKING INJECTION
-        if (currentStep === 2) {
-            // Track Step 2 completion, including features data
-            const featuresString = formData.features.join('|');
-            trackStepCompletion('step_2', featuresString);
-        } else if (currentStep === 3) {
-            // Track Step 3 completion (assuming this leads to final submit)
-            trackStepCompletion('step_3');
-        }
-        
-        // 2. Advance the Step (original)
-        setCurrentStep((s) => Math.min(3, s + 1));
-        
-        // 3. (Optional) Keep the old tracking event
-        trackEvent("step_completed", "QuotationTool", `step_${currentStep}_completed`); 
-    }
+  // 1. Validate current step
+  if (!validateStep(currentStep)) return;
+
+  // 2. GA4 Tracking
+  if (currentStep === 2) {
+    const featuresString = formData.features.join('|');
+    trackStepCompletion('step_2', featuresString);
+  } else if (currentStep === 3) {
+    trackStepCompletion('step_3');
+  }
+
+  // 3. Move to next step
+  setCurrentStep((s) => Math.min(3, s + 1));
+
+  // 4. Old tracking event (optional)
+  trackEvent("step_completed", "QuotationTool", `step_${currentStep}_completed`);
 };
        
 
   const prevStep = () => {
-    setCurrentStep((s) => Math.max(1, s - 1));
-    trackEvent("step_back", "QuotationTool", `back_to_step_${Math.max(1, currentStep - 1)}`);
-  };
+  setCurrentStep((s) => Math.max(1, s - 1));
+  trackEvent("step_back", "QuotationTool", `back_to_step_${Math.max(1, currentStep - 1)}`);
+};
 
   /* Save basic info to server */
   const isCountrySupported = (country?: string | null) => {
