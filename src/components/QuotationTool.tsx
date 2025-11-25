@@ -1476,7 +1476,8 @@ const nextStep = () => {
           </h1>
 
           <p className="md:text-xl text-lg text-white max-w-[320px] md:max-w-3xl mx-auto">Know your website cost in under 2 minutes with no commitment — transparent, automatic, and secure</p>
-          <div className="flex flex-wrap max-md:max-w-[320px] items-center justify-center mt-5 gap-2 mx-auto md:gap-4">
+          <p className="md:text-xl text-md text-[#ff1f00] max-w-[320px] md:max-w-3xl mx-auto">BLACK FRIDAY: 50% OFF YOUR FINAL WEBSITE QUOTE — Ends on 1 Dec 2025</p>
+           <div className="flex flex-wrap max-md:max-w-[320px] items-center justify-center mt-5 gap-2 mx-auto md:gap-4">
   <div className="inline-flex items-center gap-2 rounded-full border border-gray-800 bg-[#0b0b0b] px-4 py-2">
     <Lock size={16} className="text-[#ff1f00]" />
     <span className="text-sm font-medium text-white">SSL Encrypted</span>
