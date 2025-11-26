@@ -1088,92 +1088,92 @@ useEffect(() => {
     return totalDigits >= MIN && totalDigits <= MAX;
   };
 
-const validateStep = (step: number): boolean => {
-  const newErrors: Record<string, string> = {};
+  const validateStep = (step: number): boolean => {
+    const newErrors: Record<string, string> = {};
+if (step === 1) {
 
-  if (step === 1) {
+  /* =====================
+       FULL NAME
+  ===================== */
+  const cleanFullName = formData.fullName.replace(/\s/g, ""); // remove spaces
 
-    // FULL NAME
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-    } else if (formData.fullName.trim().length < 3) {
-      newErrors.fullName = "Full name must be at least 3 characters";
-    }
+  if (!formData.fullName.trim()) {
+    newErrors.fullName = "Full name is required";
+  } else if (cleanFullName.length < 7) {
+    newErrors.fullName = "Full name must have at least 7 letters";
+  }
+  
 
-    // COMPANY NAME
-    if (!formData.companyName.trim()) {
-      newErrors.companyName = "Company name is required";
-    } else if (formData.companyName.trim().length < 3) {
-      newErrors.companyName = "Company name must be at least 3 characters";
-    }
+  /* =====================
+       COMPANY NAME
+  ===================== */
+  const cleanCompanyName = formData.companyName.replace(/\s/g, "");
 
-    // COUNTRY
-    if (!formData.country) {
-      newErrors.country = "Please select your country";
-    }
-
-    // WHATSAPP NUMBER
-    if (!formData.whatsappNumber.trim()) {
-      newErrors.whatsappNumber = "WhatsApp number is required";
-    } else if (!isValidPhone(formData.whatsappNumber)) {
-      newErrors.whatsappNumber = "Invalid phone number";
-    }
-
-    // EMAIL
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (formData.email.trim().length < 10) {
-      newErrors.email = "Email minimum character: 10";
-    } else if (!isValidEmail(formData.email)) {
-      newErrors.email = "Please enter a valid professional email";
-    }
+  if (!formData.companyName.trim()) {
+    newErrors.companyName = "Company name is required";
+  } else if (cleanCompanyName.length < 7) {
+    newErrors.companyName = "Company name must have at least 7 letters";
   }
 
-  if (step === 2) {
-    if (!formData.websiteType)
-      newErrors.websiteType = "Please select website type";
 
-    if (formData.websiteType === "ecommerce") {
-      if (!formData.products) newErrors.products = "Select products range";
-      if (!formData.insertProducts)
-        newErrors.insertProducts = "Choose insert products option";
+  /* =====================
+       COUNTRY
+  ===================== */
+  if (!formData.country) {
+    newErrors.country = "Please select your country";
+  }
+
+
+  /* =====================
+       WHATSAPP NUMBER
+  ===================== */
+  if (!formData.whatsappNumber.trim()) {
+    newErrors.whatsappNumber = "WhatsApp number is required";
+  } else if (!isValidPhone(formData.whatsappNumber)) {
+    newErrors.whatsappNumber = "Error in number.";
+  }
+
+
+  /* =====================
+         EMAIL
+  ===================== */
+  if (!formData.email.trim()) {
+    newErrors.email = "Email is required";
+  } else if (formData.email.trim().length < 10) {
+    newErrors.email = "Email minimum character: 10";
+  } else if (!isValidEmail(formData.email)) {
+    newErrors.email = "Input rejected. Must use a valid professional email";
+  }
+}
+
+    if (step === 2) {
+      if (!formData.websiteType) newErrors.websiteType = "Please select website type";
+      if (formData.websiteType === "ecommerce") {
+        if (!formData.products) newErrors.products = "Select products range";
+        if (!formData.insertProducts) newErrors.insertProducts = "Choose insert products option";
+      }
+      if (formData.websiteType !== "landing" && formData.websiteType !== "ecommerce" && !formData.pages) {
+        newErrors.pages = "Select number of pages";
+      }
+      if (!formData.designStyle) newErrors.designStyle = "Select design style";
     }
 
-    if (
-      formData.websiteType !== "landing" &&
-      formData.websiteType !== "ecommerce" &&
-      !formData.pages
-    ) {
-      newErrors.pages = "Select number of pages";
+    if (step === 3) {
+      if (!formData.timeline) newErrors.timeline = "Select timeline";
+      if (!formData.hosting) newErrors.hosting = "Select hosting option";
+      if (!formData.domain) newErrors.domain = "Select domain option";
     }
 
-    if (!formData.designStyle)
-      newErrors.designStyle = "Select design style";
-  }
+    setErrors(newErrors);
 
-  if (step === 3) {
-    if (!formData.timeline) newErrors.timeline = "Select timeline";
-    if (!formData.hosting) newErrors.hosting = "Select hosting option";
-    if (!formData.domain) newErrors.domain = "Select domain option";
-  }
-
-  setErrors(newErrors);
-
-  if (Object.keys(newErrors).length > 0) {
-    trackEvent(
-      "validation_error",
-      "QuotationTool",
-      `step_${step}_error`,
-      Object.keys(newErrors).length
-    );
-
-    const firstKey = Object.keys(newErrors)[0];
-    window.alert(newErrors[firstKey]);
-    return false;
-  }
-
-  return true;
-};
+    if (Object.keys(newErrors).length > 0) {
+      trackEvent("validation_error", "QuotationTool", `step_${step}_error`, Object.keys(newErrors).length);
+      const firstKey = Object.keys(newErrors)[0];
+      window.alert(newErrors[firstKey]);
+      return false;
+    }
+    return true;
+  };
 
 
 // 🔥 FIX 2: Inject Step 2 GA4 Tracking directly into nextStep()
@@ -1278,7 +1278,43 @@ const nextStep = () => {
     }
   };
 
- 
+  const handleNextFromStep1 = async () => {
+
+    if (!validateStep(1)) return;
+
+    if (isLoadingStep1) return;
+
+    setIsLoadingStep1(true);
+
+    setCountdown(7);
+
+    const apiPromise = saveBasicToServer();
+
+    const minLoadingTime = new Promise((r) => setTimeout(r, 7000));
+
+    const [id] = await Promise.all([apiPromise, minLoadingTime]);
+
+    if (id) {
+
+      setSavedId(id);
+
+      trackStepCompletion();
+
+      trackEvent("basic_info_saved", "QuotationTool", `SavedId:${id}`);
+
+    } else {
+
+      trackEvent("basic_info_save_failed", "QuotationTool", "Save failed or no id returned");
+
+    }
+
+    setIsLoadingStep1(false);
+
+    setCountdown(0);
+
+    setCurrentStep(2);
+
+  };
 
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2) || !validateStep(3)) return;
@@ -1618,12 +1654,24 @@ const nextStep = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">Company Name</label>
-                  <input type="text" value={formData.companyName} onChange={(e) => handleInput("companyName", e.target.value)} onBlur={() => trackFieldInteraction('company_name')} placeholder="Enter your company name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
-               border border-[#1f2937]
-               outline-none focus:outline-none
-               ring-0 focus:ring-0 focus:ring-offset-0
-               focus:border-red-700"
-   disabled={isLoadingStep1} />
+                 <input
+  type="text"
+  value={formData.companyName}
+  onChange={(e) => handleInput("companyName", e.target.value)}
+  onBlur={() => trackFieldInteraction('company_name', 'step_1')}
+  placeholder="Enter your company name"
+  className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
+    border border-[#1f2937]
+    outline-none focus:outline-none
+    ring-0 focus:ring-0 focus:ring-offset-0
+    focus:border-red-700"
+  disabled={isLoadingStep1}
+/>
+
+{/* ⭐ ADD THIS BELOW — ERROR MESSAGE FOR COMPANY NAME ⭐ */}
+{errors.companyName && (
+  <p className="text-[#ff1f00] text-sm mt-1">{errors.companyName}</p>
+)}
                 </div>
               </div>
 
