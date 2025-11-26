@@ -1096,14 +1096,10 @@ if (step === 1) {
        FULL NAME
   ===================== */
   if (!formData.fullName.trim()) {
-    newErrors.fullName = "Full name is required";
-  } else if (formData.fullName.trim().length < 7) {
-    newErrors.fullName = "Full name minimum character: 7";
-  } else if (formData.fullName.trim().length >= 7 && formData.fullName.trim().length < 20) {
-    // OPTIONAL stricter check, but error message you want:
-    newErrors.fullName = "Invalid input. Please use a full name";
-  }
-
+  newErrors.fullName = "Full name is required";
+} else if (formData.fullName.trim().length < 7) {
+  newErrors.fullName = "Full name minimum character: 7";
+}
   /* =====================
        COMPANY NAME
   ===================== */
