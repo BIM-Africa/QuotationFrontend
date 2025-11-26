@@ -2164,6 +2164,6 @@ onChange={(value, country) => handleWhatsAppInput(value, country)}
       </div>
     </div>
   );
-
+};
 
 export default QuotationTool;
