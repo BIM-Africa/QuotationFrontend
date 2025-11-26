@@ -9,8 +9,37 @@ import header from "../Assests/HEADER.png";
 
 
 /* -----------------------
-   Types & Constants
+   Types & Constant
+
    ----------------------- */
+
+
+   // -----------------------------
+// reCAPTCHA v3 function
+const RECAPTCHA_SITE_KEY = "6LcPmRgsAAAAAK2lz2Pf-iR5l-yV7x98mKR3GMFj";
+
+const getRecaptchaToken = (action = "basic_info"): Promise<string | null> => {
+  return new Promise((resolve) => {
+    if (!(window as any).grecaptcha) {
+      console.error("⚠️ grecaptcha not loaded");
+      return resolve(null);
+    }
+
+    (window as any).grecaptcha.ready(() => {
+      (window as any).grecaptcha
+        .execute(RECAPTCHA_SITE_KEY, { action })
+        .then((token: string) => {
+          console.log("🔥 reCAPTCHA token:", token);
+          resolve(token || null);
+        })
+        .catch((err: any) => {
+          console.error("❌ grecaptcha.execute error:", err);
+          resolve(null);
+        });
+    });
+  });
+};
+
 
 declare global {
   interface Window {
@@ -717,6 +746,8 @@ const [countdown, setCountdown] = useState(0);
 const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 code
 
 
+<<<<<<< HEAD
+=======
 
 
 // 🛑 FIX: Use the standard reCAPTCHA v3 API endpoint (api.js, not enterprise.js)
@@ -737,6 +768,7 @@ const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 
 
 
 
+>>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
 /* --------------------------
    URL SYNC WITH HISTORY API
 --------------------------- */
@@ -1201,6 +1233,24 @@ const nextStep = () => {
     return !!country && COUNTRY_OPTIONS.includes(country as CountryKey);
   };
 
+<<<<<<< HEAD
+const saveBasicToServer = async (): Promise<string | null> => {
+  if (!isCountrySupported(formData.country)) {
+    window.alert(
+      "Selected country is not supported for API saving. The form will continue but data will not be saved remotely."
+    );
+    return null;
+  }
+
+  // ----------------------------------------------------
+  // 🔥 1) Generate reCAPTCHA v3 token for STEP 1
+  // ----------------------------------------------------
+  let recaptchaToken: string | null = null;
+  try {
+    recaptchaToken = await getRecaptchaToken("basic_info");
+    if (!recaptchaToken) {
+      console.warn("⚠️ reCAPTCHA token missing. Continuing without token.");
+=======
  const getRecaptchaToken = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       const waitFor = () => {
@@ -1239,8 +1289,52 @@ const nextStep = () => {
         "Selected country is not supported for API saving. The form will continue but data will not be saved remotely."
       );
       return null;
+>>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
+    }
+  } catch (err) {
+    console.error("reCAPTCHA token error:", err);
+  }
+
+<<<<<<< HEAD
+  // ----------------------------------------------------
+  // 🔥 2) Add token to payload
+  // ----------------------------------------------------
+  const payload = {
+    name: formData.fullName,
+    companyName: formData.companyName,
+    country: formData.country,
+    email: formData.email,
+    number: formData.whatsappNumber,
+    recaptchaToken, // ⬅ VERY IMPORTANT
+  };
+
+  // ----------------------------------------------------
+  // 🔥 3) Send to backend
+  // ----------------------------------------------------
+  try {
+    const res = await fetch(`https://backend-instant-quote.vercel.app/save-basic`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      console.error("save-basic error:", data.error);
+      window.alert(data.error || "Failed to save basic info.");
+      return null;
     }
 
+    return data.id || null;
+
+  } catch (err) {
+    console.error("Network error saving basic info:", err);
+    window.alert("Network error while saving basic info.");
+    return null;
+  }
+};
+
+=======
     try {
       // 🔥 1) Get reCAPTCHA token for Step 1
       const captchaToken = await getRecaptchaToken();
@@ -1308,6 +1402,7 @@ const getRecaptchaToken = async (): Promise<string> => {
     });
 };
     
+>>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
   const handleNextFromStep1 = async () => {
 
     if (!validateStep(1)) return;
@@ -1603,8 +1698,12 @@ const getRecaptchaToken = async (): Promise<string> => {
           </h1>
 
           <p className="md:text-xl text-lg text-white max-w-[320px] md:max-w-3xl mx-auto">Know your website cost in under 2 minutes with no commitment — transparent, automatic, and secure</p>
+<<<<<<< HEAD
+          <p className="md:text-xl text-md text-[#ff1f00] max-w-[320px] md:max-w-3xl mx-auto">BLACK FRIDAY: 50% OFF YOUR FINAL WEBSITE QUOTE — Ends on 1 Dec 2025</p>
+=======
           <br></br>
            <p className="md:ml-3 ml-1 max-sm:text-[13px] sm:text-sm font-medium text-white"> <span className="text-[#ff1f00]">Black Friday: </span> 50% Off Your Final Website Quote — Ends on 1 December 2025</p>
+>>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
            <div className="flex flex-wrap max-md:max-w-[320px] items-center justify-center mt-5 gap-2 mx-auto md:gap-4">
   <div className="inline-flex items-center gap-2 rounded-full border border-gray-800 bg-[#0b0b0b] px-4 py-2">
     <Lock size={16} className="text-[#ff1f00]" />
