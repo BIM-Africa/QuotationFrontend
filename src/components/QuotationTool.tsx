@@ -1088,61 +1088,120 @@ useEffect(() => {
     return totalDigits >= MIN && totalDigits <= MAX;
   };
 
-  const validateStep = (step: number): boolean => {
-    const newErrors: Record<string, string> = {};
-if (step === 1) {
+ const validateStep = (step: number): boolean => {
+  const newErrors: Record<string, string> = {};
 
-  /* =====================
-       FULL NAME
-  ===================== */
-  if (!formData.fullName.trim()) {
-    newErrors.fullName = "Full name is required";
-  } else if (formData.fullName.trim().length < 7) {
-    newErrors.fullName = "Full name minimum character: 7";
-  } else if (formData.fullName.trim().length >= 7 && formData.fullName.trim().length < 20) {
-    // OPTIONAL stricter check, but error message you want:
-    newErrors.fullName = "Invalid input. Please use a full name";
+  /* ===== Helper inside validateStep ===== */
+  const isValidFullName = (value: string): boolean => {
+    if (!value) return false;
+    const trimmed = value.trim();
+
+    // At least two words (first + last)
+    const words = trimmed.split(/\s+/);
+    if (words.length < 2) return false;
+
+    // Each word must be >= 2 letters and cannot contain digits
+    for (const w of words) {
+      const lettersOnly = w.replace(/[^A-Za-z\u00C0-\u024F'-]/g, "");
+      if (lettersOnly.length < 2) return false;
+      if (/\d/.test(w)) return false; // reject numbers
+    }
+
+    return true;
+  };
+
+  /* ======================
+         STEP 1
+  ======================= */
+  if (step === 1) {
+    /* FULL NAME */
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    } else if (!isValidFullName(formData.fullName)) {
+      newErrors.fullName =
+        "Invalid input. Please enter your full name (first and last name, letters only).";
+    }
+
+    /* COMPANY NAME */
+    if (!formData.companyName.trim()) {
+      newErrors.companyName = "Company name is required";
+    }
+
+    /* COUNTRY */
+    if (!formData.country) {
+      newErrors.country = "Please select your country";
+    }
+
+    /* WHATSAPP NUMBER */
+    if (!formData.whatsappNumber.trim()) {
+      newErrors.whatsappNumber = "WhatsApp number is required";
+    } else if (!isValidPhone(formData.whatsappNumber)) {
+      newErrors.whatsappNumber =
+        "Please enter a valid phone number (include country code).";
+    }
+
+    /* EMAIL */
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (formData.email.trim().length < 10) {
+      newErrors.email = "Email minimum character: 10";
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email =
+        "Input rejected. Must use a valid professional email";
+    }
   }
 
-  /* =====================
-       COMPANY NAME
-  ===================== */
-  if (!formData.companyName.trim()) {
-    newErrors.companyName = "Company name is required";
-  } else if (formData.companyName.trim().length < 7) {
-    newErrors.companyName = "Company name minimum character: 7";
-  } else if (formData.companyName.trim().length >= 7 && formData.companyName.trim().length < 20) {
-    newErrors.companyName = "Invalid input. Company name should be full";
+  /* ======================
+         STEP 2
+  ======================= */
+  if (step === 2) {
+    if (!formData.websiteType)
+      newErrors.websiteType = "Please select website type";
+
+    if (formData.websiteType === "ecommerce") {
+      if (!formData.products)
+        newErrors.products = "Select products range";
+      if (!formData.insertProducts)
+        newErrors.insertProducts = "Choose insert products option";
+    }
+
+    if (
+      formData.websiteType !== "landing" &&
+      formData.websiteType !== "ecommerce" &&
+      !formData.pages
+    ) {
+      newErrors.pages = "Select number of pages";
+    }
+
+    if (!formData.designStyle)
+      newErrors.designStyle = "Select design style";
   }
 
-  /* =====================
-       COUNTRY
-  ===================== */
-  if (!formData.country) {
-    newErrors.country = "Please select your country";
+  /* ======================
+         STEP 3
+  ======================= */
+  if (step === 3) {
+    if (!formData.timeline)
+      newErrors.timeline = "Select timeline";
+
+    if (!formData.hosting)
+      newErrors.hosting = "Select hosting option";
+
+    if (!formData.domain)
+      newErrors.domain = "Select domain option";
   }
 
-  /* =====================
-       WHATSAPP NUMBER
-  ===================== */
-  if (!formData.whatsappNumber.trim()) {
-    newErrors.whatsappNumber = "WhatsApp number is required";
-  } else if (!isValidPhone(formData.whatsappNumber)) {
-    newErrors.whatsappNumber =
-      "Error in number.";
+  /* ===== APPLY ERRORS ===== */
+  setErrors(newErrors);
+
+  if (Object.keys(newErrors).length > 0) {
+    const firstError = Object.values(newErrors)[0];
+    window.alert(firstError);
+    return false;
   }
 
-  /* =====================
-         EMAIL
-  ===================== */
-  if (!formData.email.trim()) {
-    newErrors.email = "Email is required";
-  } else if (formData.email.trim().length < 10) {
-    newErrors.email = "Email minimum character: 10";
-  } else if (!isValidEmail(formData.email)) {
-    newErrors.email = "Input rejected. Must use a valid professional email";
-  }
-}
+  return true;
+};
 
     if (step === 2) {
       if (!formData.websiteType) newErrors.websiteType = "Please select website type";
