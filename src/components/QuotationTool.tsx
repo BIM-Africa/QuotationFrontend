@@ -1088,86 +1088,92 @@ useEffect(() => {
     return totalDigits >= MIN && totalDigits <= MAX;
   };
 
-if (step === 1) {
-  /* =====================
-       FULL NAME
-  ===================== */
-  if (!formData.fullName.trim()) {
-    newErrors.fullName = "Full name is required";
-  } 
-  else if (formData.fullName.trim().length < 3) {
-    newErrors.fullName = "Full name must be at least 3 characters";
-  }
+const validateStep = (step: number): boolean => {
+  const newErrors: Record<string, string> = {};
 
-  /* =====================
-       COMPANY NAME
-  ===================== */
-  if (!formData.companyName.trim()) {
-    newErrors.companyName = "Company name is required";
-  } 
-  else if (formData.companyName.trim().length < 3) {
-    newErrors.companyName = "Company name must be at least 3 characters";
-  }
+  if (step === 1) {
 
-  /* =====================
-       COUNTRY
-  ===================== */
-  if (!formData.country) {
-    newErrors.country = "Please select your country";
-  }
-
-  /* =====================
-       WHATSAPP NUMBER
-  ===================== */
-  if (!formData.whatsappNumber.trim()) {
-    newErrors.whatsappNumber = "WhatsApp number is required";
-  } 
-  else if (!isValidPhone(formData.whatsappNumber)) {
-    newErrors.whatsappNumber = "Invalid phone number";
-  }
-
-  /* =====================
-         EMAIL
-  ===================== */
-  if (!formData.email.trim()) {
-    newErrors.email = "Email is required";
-  } 
-  else if (formData.email.trim().length < 10) {
-    newErrors.email = "Email minimum character: 10";
-  } 
-  else if (!isValidEmail(formData.email)) {
-    newErrors.email = "Please enter a valid professional email";
-  }
-}
-
-    if (step === 2) {
-      if (!formData.websiteType) newErrors.websiteType = "Please select website type";
-      if (formData.websiteType === "ecommerce") {
-        if (!formData.products) newErrors.products = "Select products range";
-        if (!formData.insertProducts) newErrors.insertProducts = "Choose insert products option";
-      }
-      if (formData.websiteType !== "landing" && formData.websiteType !== "ecommerce" && !formData.pages) {
-        newErrors.pages = "Select number of pages";
-      }
-      if (!formData.designStyle) newErrors.designStyle = "Select design style";
+    // FULL NAME
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    } else if (formData.fullName.trim().length < 3) {
+      newErrors.fullName = "Full name must be at least 3 characters";
     }
 
-    if (step === 3) {
-      if (!formData.timeline) newErrors.timeline = "Select timeline";
-      if (!formData.hosting) newErrors.hosting = "Select hosting option";
-      if (!formData.domain) newErrors.domain = "Select domain option";
+    // COMPANY NAME
+    if (!formData.companyName.trim()) {
+      newErrors.companyName = "Company name is required";
+    } else if (formData.companyName.trim().length < 3) {
+      newErrors.companyName = "Company name must be at least 3 characters";
     }
 
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      trackEvent("validation_error", "QuotationTool", `step_${step}_error`, Object.keys(newErrors).length);
-      const firstKey = Object.keys(newErrors)[0];
-      window.alert(newErrors[firstKey]);
-      return false;
+    // COUNTRY
+    if (!formData.country) {
+      newErrors.country = "Please select your country";
     }
-    return true;
-  };
+
+    // WHATSAPP NUMBER
+    if (!formData.whatsappNumber.trim()) {
+      newErrors.whatsappNumber = "WhatsApp number is required";
+    } else if (!isValidPhone(formData.whatsappNumber)) {
+      newErrors.whatsappNumber = "Invalid phone number";
+    }
+
+    // EMAIL
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (formData.email.trim().length < 10) {
+      newErrors.email = "Email minimum character: 10";
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email = "Please enter a valid professional email";
+    }
+  }
+
+  if (step === 2) {
+    if (!formData.websiteType)
+      newErrors.websiteType = "Please select website type";
+
+    if (formData.websiteType === "ecommerce") {
+      if (!formData.products) newErrors.products = "Select products range";
+      if (!formData.insertProducts)
+        newErrors.insertProducts = "Choose insert products option";
+    }
+
+    if (
+      formData.websiteType !== "landing" &&
+      formData.websiteType !== "ecommerce" &&
+      !formData.pages
+    ) {
+      newErrors.pages = "Select number of pages";
+    }
+
+    if (!formData.designStyle)
+      newErrors.designStyle = "Select design style";
+  }
+
+  if (step === 3) {
+    if (!formData.timeline) newErrors.timeline = "Select timeline";
+    if (!formData.hosting) newErrors.hosting = "Select hosting option";
+    if (!formData.domain) newErrors.domain = "Select domain option";
+  }
+
+  setErrors(newErrors);
+
+  if (Object.keys(newErrors).length > 0) {
+    trackEvent(
+      "validation_error",
+      "QuotationTool",
+      `step_${step}_error`,
+      Object.keys(newErrors).length
+    );
+
+    const firstKey = Object.keys(newErrors)[0];
+    window.alert(newErrors[firstKey]);
+    return false;
+  }
+
+  return true;
+};
 
 
 // 🔥 FIX 2: Inject Step 2 GA4 Tracking directly into nextStep()
@@ -1272,43 +1278,7 @@ const nextStep = () => {
     }
   };
 
-  const handleNextFromStep1 = async () => {
-
-    if (!validateStep(1)) return;
-
-    if (isLoadingStep1) return;
-
-    setIsLoadingStep1(true);
-
-    setCountdown(7);
-
-    const apiPromise = saveBasicToServer();
-
-    const minLoadingTime = new Promise((r) => setTimeout(r, 7000));
-
-    const [id] = await Promise.all([apiPromise, minLoadingTime]);
-
-    if (id) {
-
-      setSavedId(id);
-
-      trackStepCompletion();
-
-      trackEvent("basic_info_saved", "QuotationTool", `SavedId:${id}`);
-
-    } else {
-
-      trackEvent("basic_info_save_failed", "QuotationTool", "Save failed or no id returned");
-
-    }
-
-    setIsLoadingStep1(false);
-
-    setCountdown(0);
-
-    setCurrentStep(2);
-
-  };
+ 
 
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2) || !validateStep(3)) return;
@@ -2194,6 +2164,6 @@ onChange={(value, country) => handleWhatsAppInput(value, country)}
       </div>
     </div>
   );
-};
+
 
 export default QuotationTool;
