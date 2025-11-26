@@ -48,7 +48,7 @@ declare global {
     grecaptcha: any; // 👈 ADD THIS
   }
 }
-const RECAPTCHA_SITE_KEY = "6LcPmRgsAAAAAK2lz2Pf-iR5l-yV7x98mKR3GMFj"; // Replace with your actual site key
+
 type CountryKey =
   | "Australia"
   | "Austria"
