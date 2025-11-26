@@ -746,29 +746,6 @@ const [countdown, setCountdown] = useState(0);
 const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 code
 
 
-<<<<<<< HEAD
-=======
-
-
-// 🛑 FIX: Use the standard reCAPTCHA v3 API endpoint (api.js, not enterprise.js)
- useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    // Check for the standard v3 script, or the enterprise script, to prevent loading twice
-    if (document.querySelector('script[src*="recaptcha/api.js"]') || 
-        document.querySelector('script[src*="recaptcha/enterprise.js"]')) return;
-
-    const script = document.createElement("script");
-    // 🔥 CORRECTED SCRIPT SOURCE FOR STANDARD V3 🔥
-    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }, []);
-
-
-
->>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
 /* --------------------------
    URL SYNC WITH HISTORY API
 --------------------------- */
@@ -1233,7 +1210,6 @@ const nextStep = () => {
     return !!country && COUNTRY_OPTIONS.includes(country as CountryKey);
   };
 
-<<<<<<< HEAD
 const saveBasicToServer = async (): Promise<string | null> => {
   if (!isCountrySupported(formData.country)) {
     window.alert(
@@ -1250,52 +1226,11 @@ const saveBasicToServer = async (): Promise<string | null> => {
     recaptchaToken = await getRecaptchaToken("basic_info");
     if (!recaptchaToken) {
       console.warn("⚠️ reCAPTCHA token missing. Continuing without token.");
-=======
- const getRecaptchaToken = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const waitFor = () => {
-        // 1. Check only for the standard grecaptcha object
-        if (!window.grecaptcha || !window.grecaptcha.execute) {
-          return setTimeout(waitFor, 150);
-        }
-
-        // 2. Standard v3 doesn't use a 'ready' callback like Enterprise.
-        // We call execute directly, passing the site key and action.
-        
-        try {
-          const tokenPromise = window.grecaptcha.execute(
-            RECAPTCHA_SITE_KEY, // The key you defined earlier
-            { action: "basic_info" } // 👈 action name for Step 1
-          );
-          // Since execute returns a Promise, we can use await/then
-          tokenPromise.then(resolve).catch(reject);
-        } catch (err) {
-          reject(err);
-        }
-      };
-      // Start the wait sequence
-      waitFor();
-    });
-  };
-      waitFor();
-    });
-  };
-
-
- 
-      const saveBasicToServer = async (): Promise<string | null> => {
-    if (!isCountrySupported(formData.country)) {
-      window.alert(
-        "Selected country is not supported for API saving. The form will continue but data will not be saved remotely."
-      );
-      return null;
->>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
     }
   } catch (err) {
     console.error("reCAPTCHA token error:", err);
   }
 
-<<<<<<< HEAD
   // ----------------------------------------------------
   // 🔥 2) Add token to payload
   // ----------------------------------------------------
@@ -1334,75 +1269,6 @@ const saveBasicToServer = async (): Promise<string | null> => {
   }
 };
 
-=======
-    try {
-      // 🔥 1) Get reCAPTCHA token for Step 1
-      const captchaToken = await getRecaptchaToken();
-
-      // 🔥 2) Include token in payload
-      const payload = {
-        name: formData.fullName,
-        companyName: formData.companyName,
-        country: formData.country,
-        email: formData.email,
-        number: formData.whatsappNumber,
-        captchaToken, // 👈 IMPORTANT
-      };
-
-      const res = await fetch(`https://backend-instant-quote.vercel.app/save-basic`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.error("save-basic error:", errorData);
-        window.alert(errorData.error || "Failed to save basic info. You can still continue.");
-        return null;
-      }
-
-      const data = await res.json();
-      if (data && data.id) return data.id;
-      return null;
-    } catch (err) {
-      console.error("Network error saving basic info:", err);
-      window.alert("Network error while saving basic info. You can still continue.");
-      return null;
-    }
-  };
-
-const getRecaptchaToken = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const waitFor = () => {
-            // Check for the standard grecaptcha.execute function to be loaded and ready
-            // The script loading happens in the useEffect, this waits for it to finish.
-            if (!window.grecaptcha || !window.grecaptcha.execute) {
-                return setTimeout(waitFor, 150);
-            }
-
-            try {
-                // Call the STANDARD v3 execute method
-                const tokenPromise = window.grecaptcha.execute(
-                    RECAPTCHA_SITE_KEY, 
-                    { action: "basic_info" }
-                );
-                
-                // Resolve the promise with the token
-                tokenPromise.then(resolve).catch(err => {
-                   console.error("reCAPTCHA execution failed (promise):", err);
-                   reject(err);
-                });
-            } catch (err) {
-                console.error("reCAPTCHA execution failed (sync):", err);
-                reject(err);
-            }
-        };
-        waitFor();
-    });
-};
-    
->>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
   const handleNextFromStep1 = async () => {
 
     if (!validateStep(1)) return;
@@ -1698,12 +1564,7 @@ const getRecaptchaToken = async (): Promise<string> => {
           </h1>
 
           <p className="md:text-xl text-lg text-white max-w-[320px] md:max-w-3xl mx-auto">Know your website cost in under 2 minutes with no commitment — transparent, automatic, and secure</p>
-<<<<<<< HEAD
           <p className="md:text-xl text-md text-[#ff1f00] max-w-[320px] md:max-w-3xl mx-auto">BLACK FRIDAY: 50% OFF YOUR FINAL WEBSITE QUOTE — Ends on 1 Dec 2025</p>
-=======
-          <br></br>
-           <p className="md:ml-3 ml-1 max-sm:text-[13px] sm:text-sm font-medium text-white"> <span className="text-[#ff1f00]">Black Friday: </span> 50% Off Your Final Website Quote — Ends on 1 December 2025</p>
->>>>>>> 2360ef66371de6482dc25bbdc4376f7cf67b60df
            <div className="flex flex-wrap max-md:max-w-[320px] items-center justify-center mt-5 gap-2 mx-auto md:gap-4">
   <div className="inline-flex items-center gap-2 rounded-full border border-gray-800 bg-[#0b0b0b] px-4 py-2">
     <Lock size={16} className="text-[#ff1f00]" />
