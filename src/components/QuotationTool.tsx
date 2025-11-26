@@ -5,6 +5,9 @@ import mobile from "../Assests/new.jpeg";
 import selected from "../Assests/selected.png";
 import nonselected from "../Assests/nonselected.png";
 import header from "../Assests/HEADER.png";
+
+
+
 /* -----------------------
    Types & Constants
    ----------------------- */
@@ -13,9 +16,10 @@ declare global {
   interface Window {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
+    grecaptcha: any; // 👈 ADD THIS
   }
 }
-
+const RECAPTCHA_SITE_KEY = "6LcPmRgsAAAAAK2lz2Pf-iR5l-yV7x98mKR3GMFj"; // Replace with your actual site key
 type CountryKey =
   | "Australia"
   | "Austria"
@@ -713,6 +717,25 @@ const [countdown, setCountdown] = useState(0);
 const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 code
 
 
+
+
+ // Load Google reCAPTCHA script once (Step 1 protection)
+   // Load Google reCAPTCHA script once (Step 1 protection)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // already loaded? skip
+    if (document.querySelector('script[src*="recaptcha/enterprise.js"]')) return;
+
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/enterprise.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }, []);
+
+
+
 /* --------------------------
    URL SYNC WITH HISTORY API
 --------------------------- */
@@ -1067,20 +1090,59 @@ useEffect(() => {
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
+if (step === 1) {
 
-    if (step === 1) {
-      if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-      if (!formData.country) newErrors.country = "Please select your country";
+  /* =====================
+       FULL NAME
+  ===================== */
+  if (!formData.fullName.trim()) {
+    newErrors.fullName = "Full name is required";
+  } else if (formData.fullName.trim().length < 7) {
+    newErrors.fullName = "Full name minimum character: 7";
+  } else if (formData.fullName.trim().length >= 7 && formData.fullName.trim().length < 20) {
+    // OPTIONAL stricter check, but error message you want:
+    newErrors.fullName = "Invalid input. Please use a full name";
+  }
 
-      if (!formData.whatsappNumber.trim()) {
-        newErrors.whatsappNumber = "WhatsApp number is required";
-      } else if (!isValidPhone(formData.whatsappNumber)) {
-        newErrors.whatsappNumber = "Please enter a valid phone number (include country code or enter local number). Must be between 9 and 17 digits.";
-      }
+  /* =====================
+       COMPANY NAME
+  ===================== */
+  if (!formData.companyName.trim()) {
+    newErrors.companyName = "Company name is required";
+  } else if (formData.companyName.trim().length < 7) {
+    newErrors.companyName = "Company name minimum character: 7";
+  } else if (formData.companyName.trim().length >= 7 && formData.companyName.trim().length < 20) {
+    newErrors.companyName = "Invalid input. Company name should be full";
+  }
 
-      if (!formData.email.trim()) newErrors.email = "Email is required";
-      else if (!isValidEmail(formData.email)) newErrors.email = "Email must be valid and include '@'";
-    }
+  /* =====================
+       COUNTRY
+  ===================== */
+  if (!formData.country) {
+    newErrors.country = "Please select your country";
+  }
+
+  /* =====================
+       WHATSAPP NUMBER
+  ===================== */
+  if (!formData.whatsappNumber.trim()) {
+    newErrors.whatsappNumber = "WhatsApp number is required";
+  } else if (!isValidPhone(formData.whatsappNumber)) {
+    newErrors.whatsappNumber =
+      "Please enter a valid phone number (include country code). Must be between 9 and 17 digits.";
+  }
+
+  /* =====================
+         EMAIL
+  ===================== */
+  if (!formData.email.trim()) {
+    newErrors.email = "Email is required";
+  } else if (formData.email.trim().length < 10) {
+    newErrors.email = "Email minimum character: 10";
+  } else if (!isValidEmail(formData.email)) {
+    newErrors.email = "Input rejected. Must use a valid professional email";
+  }
+}
 
     if (step === 2) {
       if (!formData.websiteType) newErrors.websiteType = "Please select website type";
@@ -1143,21 +1205,54 @@ const nextStep = () => {
     return !!country && COUNTRY_OPTIONS.includes(country as CountryKey);
   };
 
-  const saveBasicToServer = async (): Promise<string | null> => {
+    const getRecaptchaToken = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const waitFor = () => {
+        if (!window.grecaptcha || !window.grecaptcha.enterprise) {
+          return setTimeout(waitFor, 150);
+        }
+
+        window.grecaptcha.enterprise.ready(async () => {
+          try {
+            const token = await window.grecaptcha.enterprise.execute(
+              RECAPTCHA_SITE_KEY,
+              { action: "basic_info" } // 👈 action name for Step 1
+            );
+            resolve(token);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      };
+
+      waitFor();
+    });
+  };
+
+
+ 
+      const saveBasicToServer = async (): Promise<string | null> => {
     if (!isCountrySupported(formData.country)) {
-      window.alert("Selected country is not supported for API saving. The form will continue but data will not be saved remotely.");
+      window.alert(
+        "Selected country is not supported for API saving. The form will continue but data will not be saved remotely."
+      );
       return null;
     }
 
-    const payload = {
-      name: formData.fullName,
-      companyName: formData.companyName,
-      country: formData.country,
-      email: formData.email,
-      number: formData.whatsappNumber,
-    };
-
     try {
+      // 🔥 1) Get reCAPTCHA token for Step 1
+      const captchaToken = await getRecaptchaToken();
+
+      // 🔥 2) Include token in payload
+      const payload = {
+        name: formData.fullName,
+        companyName: formData.companyName,
+        country: formData.country,
+        email: formData.email,
+        number: formData.whatsappNumber,
+        captchaToken, // 👈 IMPORTANT
+      };
+
       const res = await fetch(`https://backend-instant-quote.vercel.app/save-basic`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
