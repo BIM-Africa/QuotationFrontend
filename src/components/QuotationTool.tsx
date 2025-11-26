@@ -719,20 +719,21 @@ const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 
 
 
 
- // Load Google reCAPTCHA script once (Step 1 protection)
-   // Load Google reCAPTCHA script once (Step 1 protection)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+// 🛑 FIX: Use the standard reCAPTCHA v3 API endpoint (api.js, not enterprise.js)
+ useEffect(() => {
+    if (typeof window === "undefined") return;
 
-    // already loaded? skip
-    if (document.querySelector('script[src*="recaptcha/enterprise.js"]')) return;
+    // Check for the standard v3 script, or the enterprise script, to prevent loading twice
+    if (document.querySelector('script[src*="recaptcha/api.js"]') || 
+        document.querySelector('script[src*="recaptcha/enterprise.js"]')) return;
 
-    const script = document.createElement("script");
-    script.src = `https://www.google.com/recaptcha/enterprise.js?render=${RECAPTCHA_SITE_KEY}`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }, []);
+    const script = document.createElement("script");
+    // 🔥 CORRECTED SCRIPT SOURCE FOR STANDARD V3 🔥
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }, []);
 
 
 
@@ -1200,26 +1201,32 @@ const nextStep = () => {
     return !!country && COUNTRY_OPTIONS.includes(country as CountryKey);
   };
 
-    const getRecaptchaToken = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const waitFor = () => {
-        if (!window.grecaptcha || !window.grecaptcha.enterprise) {
-          return setTimeout(waitFor, 150);
-        }
+ const getRecaptchaToken = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const waitFor = () => {
+        // 1. Check only for the standard grecaptcha object
+        if (!window.grecaptcha || !window.grecaptcha.execute) {
+          return setTimeout(waitFor, 150);
+        }
 
-        window.grecaptcha.enterprise.ready(async () => {
-          try {
-            const token = await window.grecaptcha.enterprise.execute(
-              RECAPTCHA_SITE_KEY,
-              { action: "basic_info" } // 👈 action name for Step 1
-            );
-            resolve(token);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      };
-
+        // 2. Standard v3 doesn't use a 'ready' callback like Enterprise.
+        // We call execute directly, passing the site key and action.
+        
+        try {
+          const tokenPromise = window.grecaptcha.execute(
+            RECAPTCHA_SITE_KEY, // The key you defined earlier
+            { action: "basic_info" } // 👈 action name for Step 1
+          );
+          // Since execute returns a Promise, we can use await/then
+          tokenPromise.then(resolve).catch(reject);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      // Start the wait sequence
+      waitFor();
+    });
+  };
       waitFor();
     });
   };
@@ -1271,6 +1278,36 @@ const nextStep = () => {
     }
   };
 
+const getRecaptchaToken = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const waitFor = () => {
+            // Check for the standard grecaptcha.execute function to be loaded and ready
+            // The script loading happens in the useEffect, this waits for it to finish.
+            if (!window.grecaptcha || !window.grecaptcha.execute) {
+                return setTimeout(waitFor, 150);
+            }
+
+            try {
+                // Call the STANDARD v3 execute method
+                const tokenPromise = window.grecaptcha.execute(
+                    RECAPTCHA_SITE_KEY, 
+                    { action: "basic_info" }
+                );
+                
+                // Resolve the promise with the token
+                tokenPromise.then(resolve).catch(err => {
+                   console.error("reCAPTCHA execution failed (promise):", err);
+                   reject(err);
+                });
+            } catch (err) {
+                console.error("reCAPTCHA execution failed (sync):", err);
+                reject(err);
+            }
+        };
+        waitFor();
+    });
+};
+    
   const handleNextFromStep1 = async () => {
 
     if (!validateStep(1)) return;
