@@ -1088,20 +1088,15 @@ useEffect(() => {
     return totalDigits >= MIN && totalDigits <= MAX;
   };
 
-  const validateStep = (step: number): boolean => {
-    const newErrors: Record<string, string> = {};
 if (step === 1) {
-
   /* =====================
        FULL NAME
   ===================== */
   if (!formData.fullName.trim()) {
     newErrors.fullName = "Full name is required";
-  } else if (formData.fullName.trim().length < 7) {
-    newErrors.fullName = "Full name minimum character: 7";
-  } else if (formData.fullName.trim().length >= 7 && formData.fullName.trim().length < 20) {
-    // OPTIONAL stricter check, but error message you want:
-    newErrors.fullName = "Invalid input. Please use a full name";
+  } 
+  else if (formData.fullName.trim().length < 3) {
+    newErrors.fullName = "Full name must be at least 3 characters";
   }
 
   /* =====================
@@ -1109,10 +1104,9 @@ if (step === 1) {
   ===================== */
   if (!formData.companyName.trim()) {
     newErrors.companyName = "Company name is required";
-  } else if (formData.companyName.trim().length < 7) {
-    newErrors.companyName = "Company name minimum character: 7";
-  } else if (formData.companyName.trim().length >= 7 && formData.companyName.trim().length < 20) {
-    newErrors.companyName = "Invalid input. Company name should be full";
+  } 
+  else if (formData.companyName.trim().length < 3) {
+    newErrors.companyName = "Company name must be at least 3 characters";
   }
 
   /* =====================
@@ -1127,9 +1121,9 @@ if (step === 1) {
   ===================== */
   if (!formData.whatsappNumber.trim()) {
     newErrors.whatsappNumber = "WhatsApp number is required";
-  } else if (!isValidPhone(formData.whatsappNumber)) {
-    newErrors.whatsappNumber =
-      "Error in number.";
+  } 
+  else if (!isValidPhone(formData.whatsappNumber)) {
+    newErrors.whatsappNumber = "Invalid phone number";
   }
 
   /* =====================
@@ -1137,10 +1131,12 @@ if (step === 1) {
   ===================== */
   if (!formData.email.trim()) {
     newErrors.email = "Email is required";
-  } else if (formData.email.trim().length < 10) {
+  } 
+  else if (formData.email.trim().length < 10) {
     newErrors.email = "Email minimum character: 10";
-  } else if (!isValidEmail(formData.email)) {
-    newErrors.email = "Input rejected. Must use a valid professional email";
+  } 
+  else if (!isValidEmail(formData.email)) {
+    newErrors.email = "Please enter a valid professional email";
   }
 }
 
