@@ -1095,26 +1095,25 @@ if (step === 1) {
   /* =====================
        FULL NAME
   ===================== */
-  const cleanFullName = formData.fullName.replace(/\s/g, ""); // remove spaces
-
   if (!formData.fullName.trim()) {
     newErrors.fullName = "Full name is required";
-  } else if (cleanFullName.length < 7) {
-    newErrors.fullName = "Full name must have at least 7 letters";
+  } else if (formData.fullName.trim().length < 7) {
+    newErrors.fullName = "Full name minimum character: 7";
+  } else if (formData.fullName.trim().length >= 7 && formData.fullName.trim().length < 20) {
+    // OPTIONAL stricter check, but error message you want:
+    newErrors.fullName = "Invalid input. Please use a full name";
   }
-  
 
   /* =====================
        COMPANY NAME
   ===================== */
-  const cleanCompanyName = formData.companyName.replace(/\s/g, "");
-
   if (!formData.companyName.trim()) {
     newErrors.companyName = "Company name is required";
-  } else if (cleanCompanyName.length < 7) {
-    newErrors.companyName = "Company name must have at least 7 letters";
+  } else if (formData.companyName.trim().length < 7) {
+    newErrors.companyName = "Company name minimum character: 7";
+  } else if (formData.companyName.trim().length >= 7 && formData.companyName.trim().length < 20) {
+    newErrors.companyName = "Invalid input. Company name should be full";
   }
-
 
   /* =====================
        COUNTRY
@@ -1123,16 +1122,15 @@ if (step === 1) {
     newErrors.country = "Please select your country";
   }
 
-
   /* =====================
        WHATSAPP NUMBER
   ===================== */
   if (!formData.whatsappNumber.trim()) {
     newErrors.whatsappNumber = "WhatsApp number is required";
   } else if (!isValidPhone(formData.whatsappNumber)) {
-    newErrors.whatsappNumber = "Error in number.";
+    newErrors.whatsappNumber =
+      "Please enter a valid phone number (include country code). Must be between 9 and 17 digits.";
   }
-
 
   /* =====================
          EMAIL
@@ -1654,24 +1652,12 @@ const nextStep = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">Company Name</label>
-                 <input
-  type="text"
-  value={formData.companyName}
-  onChange={(e) => handleInput("companyName", e.target.value)}
-  onBlur={() => trackFieldInteraction('company_name', 'step_1')}
-  placeholder="Enter your company name"
-  className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
-    border border-[#1f2937]
-    outline-none focus:outline-none
-    ring-0 focus:ring-0 focus:ring-offset-0
-    focus:border-red-700"
-  disabled={isLoadingStep1}
-/>
-
-{/* ⭐ ADD THIS BELOW — ERROR MESSAGE FOR COMPANY NAME ⭐ */}
-{errors.companyName && (
-  <p className="text-[#ff1f00] text-sm mt-1">{errors.companyName}</p>
-)}
+                  <input type="text" value={formData.companyName} onChange={(e) => handleInput("companyName", e.target.value)} onBlur={() => trackFieldInteraction('company_name')} placeholder="Enter your company name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
+               border border-[#1f2937]
+               outline-none focus:outline-none
+               ring-0 focus:ring-0 focus:ring-offset-0
+               focus:border-red-700"
+   disabled={isLoadingStep1} />
                 </div>
               </div>
 
