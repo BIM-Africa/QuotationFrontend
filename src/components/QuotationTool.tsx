@@ -1104,12 +1104,11 @@ if (step === 1) {
        COMPANY NAME
   ===================== */
   if (!formData.companyName.trim()) {
-    newErrors.companyName = "Company name is required";
-  } else if (formData.companyName.trim().length < 7) {
-    newErrors.companyName = "Company name minimum character: 7";
-  } else if (formData.companyName.trim().length >= 7 && formData.companyName.trim().length < 20) {
-    newErrors.companyName = "Invalid input. Company name should be full";
-  }
+  newErrors.companyName = "Company name is required";
+} else if (formData.companyName.trim().length < 7) {
+  newErrors.companyName = "Company name minimum character: 7";
+}
+
 
   /* =====================
        COUNTRY
