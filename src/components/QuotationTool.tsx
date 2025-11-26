@@ -1129,7 +1129,7 @@ if (step === 1) {
     newErrors.whatsappNumber = "WhatsApp number is required";
   } else if (!isValidPhone(formData.whatsappNumber)) {
     newErrors.whatsappNumber =
-      "Please enter a valid phone number (include country code). Must be between 9 and 17 digits.";
+      "Error in number.";
   }
 
   /* =====================
