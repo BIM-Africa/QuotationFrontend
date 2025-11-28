@@ -13,8 +13,15 @@ declare global {
   interface Window {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
+    grecaptcha?: {
+      ready: (cb: () => void) => void;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
   }
 }
+
+// ✅ reCAPTCHA v3 SITE KEY (frontend allowed)
+const RECAPTCHA_SITE_KEY = "6LcPmRgsAAAAAK2lz2Pf-iR5l-yV7x98mKR3GMFj";
 
 type CountryKey =
   | "Australia"
@@ -712,6 +719,21 @@ const [isLoadingStep1, setIsLoadingStep1] = useState(false);
 const [countdown, setCountdown] = useState(0);
 const [selectedPhoneCountry, setSelectedPhoneCountry] = useState("mu"); // iso2 code
 
+  // ✅ Load reCAPTCHA v3 script on frontend (only once)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // agar already added hai to dobara mat lagao
+    if (document.querySelector('script[data-recaptcha="v3"]')) return;
+
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.setAttribute("data-recaptcha", "v3");
+    document.head.appendChild(script);
+  }, []);
+
+
 
 /* --------------------------
    URL SYNC WITH HISTORY API
@@ -1110,6 +1132,24 @@ useEffect(() => {
     }
     return true;
   };
+  // ================================
+  // RECAPTCHA TOKEN FUNCTION (PASTE)
+  // ================================
+  const getRecaptchaToken = async (action: string = "basic_info"): Promise<string> => {
+   if (typeof window === "undefined" || !window.grecaptcha?.execute) {
+      console.warn("reCAPTCHA not loaded");
+      return "";
+    }
+
+    return new Promise((resolve) => {
+      window.grecaptcha?.ready(() => {
+        window.grecaptcha!
+          .execute(RECAPTCHA_SITE_KEY, { action })
+          .then((token: string) => resolve(token || ""))
+          .catch(() => resolve(""));
+      });
+    });
+  };
 
 
 // 🔥 FIX 2: Inject Step 2 GA4 Tracking directly into nextStep()
@@ -1143,26 +1183,31 @@ const nextStep = () => {
     return !!country && COUNTRY_OPTIONS.includes(country as CountryKey);
   };
 
-  const saveBasicToServer = async (): Promise<string | null> => {
-    if (!isCountrySupported(formData.country)) {
-      window.alert("Selected country is not supported for API saving. The form will continue but data will not be saved remotely.");
-      return null;
-    }
+ const saveBasicToServer = async (): Promise<string | null> => {
+  if (!isCountrySupported(formData.country)) {
+    window.alert("Selected country is not supported for API saving. The form will continue but data will not be saved remotely.");
+    return null;
+  }
 
-    const payload = {
-      name: formData.fullName,
-      companyName: formData.companyName,
-      country: formData.country,
-      email: formData.email,
-      number: formData.whatsappNumber,
-    };
+  // 🔥 NEW: get reCAPTCHA token
+  const captchaToken = await getRecaptchaToken("basic_info");
 
-    try {
-      const res = await fetch(`https://backend-instant-quote.vercel.app/save-basic`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+  // 🔥 NEW: payload with captcha
+  const payload = {
+    name: formData.fullName,
+    companyName: formData.companyName,
+    country: formData.country,
+    email: formData.email,
+    number: formData.whatsappNumber,
+    captchaToken: captchaToken, // <— THIS IS IMPORTANT
+  };
+
+  try {
+    const res = await fetch(`https://backend-instant-quote.vercel.app/save-basic`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
       if (!res.ok) {
         const errorData = await res.json();
