@@ -1091,19 +1091,40 @@ useEffect(() => {
     const newErrors: Record<string, string> = {};
 
     if (step === 1) {
-      if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+      if (!formData.fullName.trim()) {
+  newErrors.fullName = "Full name is required";
+} else if (formData.fullName.trim().length < 7) {
+  newErrors.fullName = "Invalid input. Please use a full name (minimum 7 characters)";
+}
+// COMPANY NAME
+if (!formData.companyName.trim()) {
+  newErrors.companyName = "Company name is required";
+} else {
+  const wordCount = formData.companyName.trim().split(/\s+/).length;
+
+  if (wordCount < 3) {
+    newErrors.companyName = "Invalid input. Please use a full company name";
+  }
+}
       if (!formData.country) newErrors.country = "Please select your country";
 
       if (!formData.whatsappNumber.trim()) {
         newErrors.whatsappNumber = "WhatsApp number is required";
       } else if (!isValidPhone(formData.whatsappNumber)) {
-        newErrors.whatsappNumber = "Please enter a valid phone number (include country code or enter local number). Must be between 9 and 17 digits.";
+        newErrors.whatsappNumber = "Error in Number ";
       }
 
-      if (!formData.email.trim()) newErrors.email = "Email is required";
-      else if (!isValidEmail(formData.email)) newErrors.email = "Email must be valid and include '@'";
+      // EMAIL
+if (!formData.email.trim()) {
+  newErrors.email = "Email is required";
+} 
+else if (formData.email.trim().length < 10) {
+  newErrors.email = "Must be a valid professional email";
+}
+else if (!isValidEmail(formData.email)) {
+  newErrors.email = "Email must be valid and include '@'";
+}
     }
-
     if (step === 2) {
       if (!formData.websiteType) newErrors.websiteType = "Please select website type";
       if (formData.websiteType === "ecommerce") {
@@ -1136,14 +1157,14 @@ useEffect(() => {
   // RECAPTCHA TOKEN FUNCTION (PASTE)
   // ================================
   const getRecaptchaToken = async (action: string = "basic_info"): Promise<string> => {
-   if (typeof window === "undefined" || !window.grecaptcha?.execute) {
+    if (typeof window === "undefined" || !window.grecaptcha) {
       console.warn("reCAPTCHA not loaded");
       return "";
     }
 
     return new Promise((resolve) => {
-      window.grecaptcha?.ready(() => {
-        window.grecaptcha!
+      window.grecaptcha.ready(() => {
+        window.grecaptcha
           .execute(RECAPTCHA_SITE_KEY, { action })
           .then((token: string) => resolve(token || ""))
           .catch(() => resolve(""));
@@ -1590,7 +1611,7 @@ const nextStep = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-white mb-2">Full Name *</label>
                   <input type="text" value={formData.fullName} onChange={(e) => handleInput("fullName", e.target.value)} onBlur={() => trackFieldInteraction('full_name')} placeholder="Enter your full name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
                border border-[#1f2937]
                outline-none focus:outline-none
@@ -1601,18 +1622,19 @@ const nextStep = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Company Name</label>
+                  <label className="block text-sm font-medium text-white mb-2">Company Name *</label>
                   <input type="text" value={formData.companyName} onChange={(e) => handleInput("companyName", e.target.value)} onBlur={() => trackFieldInteraction('company_name')} placeholder="Enter your company name" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
                border border-[#1f2937]
                outline-none focus:outline-none
                ring-0 focus:ring-0 focus:ring-offset-0
                focus:border-red-700"
    disabled={isLoadingStep1} />
+                  {errors.companyName && <p className="text-[#ff1f00] text-sm mt-1">{errors.companyName}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Country</label>
+                <label className="block text-sm font-medium text-white mb-2">Country *</label>
                 <select value={formData.country} onChange={(e) => { handleInput("country", e.target.value as CountryKey); trackFieldInteraction('country_select');}} className="w-full px-4 py-3  rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700   bg-[#0b0b0b] border border-[#1f2937] text-[#e5e7eb]" disabled={isLoadingStep1}>
                   <option value="">Select your country</option>
                   {COUNTRY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -1766,7 +1788,7 @@ div:has(input[type="radio"]:checked) { border-color: #b91c1c !important; }
 
 
 
-                <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number</label>
+                <label className="block text-sm font-medium text-white mb-2 ">WhatsApp Number *</label>
 <PhoneInputComponent
   value={formData.whatsappNumber}
 onChange={(value, country) => handleWhatsAppInput(value, country)} 
@@ -1785,7 +1807,7 @@ onChange={(value, country) => handleWhatsAppInput(value, country)}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-white mb-2">Email *</label>
                   <input type="email" value={formData.email} onChange={(e) => handleInput("email", e.target.value)} onBlur={() => trackFieldInteraction('email')} placeholder="Enter your email" className="w-full px-4 py-3 rounded-lg bg-[#0b0b0b] text-[#e5e7eb]
                border border-[#1f2937]
                outline-none focus:outline-none
