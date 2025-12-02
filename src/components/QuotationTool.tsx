@@ -1094,7 +1094,7 @@ useEffect(() => {
       if (!formData.fullName.trim()) {
   newErrors.fullName = "Full name is required";
 } else if (formData.fullName.trim().length < 7) {
-  newErrors.fullName = "Invalid input. Please use a full name (minimum 7 characters)";
+  newErrors.fullName = "Invalid input. Please use a full name";
 }
 // COMPANY NAME
 if (!formData.companyName.trim()) {
