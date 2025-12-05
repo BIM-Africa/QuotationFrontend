@@ -1543,7 +1543,7 @@ const nextStep = () => {
 
           <p className="md:text-xl text-lg text-white max-w-[320px] md:max-w-3xl mx-auto">Know your website cost in under 2 minutes with no commitment — transparent, automatic, and secure</p>
           <br></br>
-           <p className="md:ml-3 ml-1 max-sm:text-[13px] sm:text-sm font-medium text-white"> <span className="text-[#ff1f00]">Black Friday: </span> 50% Off Your Final Website Quote — Ends on 1 December 2025</p>
+           <p className="md:ml-3 ml-1 max-sm:text-[13px] sm:text-sm font-medium text-white"> <span className="text-[#ff1f00]">Promotions: </span> No current promotions. WhatsApp Us to be the first to know.</p>
            <div className="flex flex-wrap max-md:max-w-[320px] items-center justify-center mt-5 gap-2 mx-auto md:gap-4">
   <div className="inline-flex items-center gap-2 rounded-full border border-gray-800 bg-[#0b0b0b] px-4 py-2">
     <Lock size={16} className="text-[#ff1f00]" />
